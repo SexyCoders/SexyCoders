@@ -7,6 +7,3 @@
 [submodule "oauth2"]
 	path = auth/oauth2
 	url = https://github.com/SexyCoders/oauth2.git
-[submodule "lib/data"]
-	path = lib/data
-	url = https://github.com/SexyCoders/lib.git
