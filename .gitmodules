@@ -1,6 +1,0 @@
-[submodule "var/solar/time.php"]
-	path = var/solar/time.php
-	url = https://github.com/SexyCodersTimeProject/time.php.git
-[submodule "var/base/time.php"]
-	path = var/base/time.php
-	url = https://github.com/SexyCodersTimeProject/time.php.git
