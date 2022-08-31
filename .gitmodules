@@ -4,6 +4,3 @@
 [submodule "var/base/time.php"]
 	path = var/base/time.php
 	url = https://github.com/SexyCodersTimeProject/time.php.git
-[submodule "oauth2"]
-	path = auth/oauth2
-	url = https://github.com/SexyCoders/oauth2.git
