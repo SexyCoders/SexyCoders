@@ -177,6 +177,6 @@ $app->post('/resolve',function(Request $request, Response $response){
             $stmt->execute([$data['username']]);
             $ResponseData->company=$stmt->fetch();
         }
-}
+});
 
 $app->run();
