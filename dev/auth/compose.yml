@@ -1,0 +1,41 @@
+version: '3.7'
+
+networks:
+  sso:
+    name: sso
+
+services:
+  database:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+      - POSTGRES_DB=keycloak
+    networks:
+      - sso
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/opt/sso-dev/database:/var/lib/postgresql/data
+  keycloak:
+    image: keycloak/keycloak:17.0.0
+    networks:
+      - sso
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_DATABASE: keycloak
+      DB_ADDR: localhost 
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_HTTP_PORT: 8080
+      KC_HOSTNAME: localhost:8989
+      KC_HOSTNAME_STRICT: 'false'
+      PROXY_ADDRESS_FORWARDING: 'true'
+      KC_HTTP_ENABLED: 'true'
+      KC_METRICS_ENABLED: 'true'
+    ports:
+      - 8989:8080
+    command: start-dev
+

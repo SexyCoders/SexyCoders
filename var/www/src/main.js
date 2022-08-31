@@ -9,32 +9,41 @@ import { iconsSet as icons } from '@/assets/icons'
 import DocsCallout from '@/components/DocsCallout'
 import DocsExample from '@/components/DocsExample'
 
-const app = createApp(App)
-app.use(store)
-app.use(router)
-app.use(CoreuiVue)
-app.provide('icons', icons)
-app.component('CIcon', CIcon)
-app.component('DocsCallout', DocsCallout)
-app.component('DocsExample', DocsExample)
+import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
+
+//KEYCLOAK
+//
+const initOptions = {
+  url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
+  realm: process.env.VUE_APP_KEYCLOAK_OPTIONS_REALM,
+  clientId: process.env.VUE_APP_KEYCLOAK_OPTIONS_CLIENTID,
+  onLoad: process.env.VUE_APP_KEYCLOAK_OPTIONS_ONLOAD,
+}
 
 
-/////////////////FONTAWESOME CONFIG////////////////////
-/* import the fontawesome core */
-import { library } from '@fortawesome/fontawesome-svg-core'
+let keycloak = Keycloak(initOptions);
 
-/* import specific icons */
-import { fas } from '@fortawesome/free-solid-svg-icons'
+keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
+  if (!auth) {
+    window.location.reload();
+  } else {
+    console.info("Authenticated");
 
-/* import font awesome icon component */
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+    await keycloak.loadUserInfo();
 
-/* add icons to the library */
-library.add(fas)
+    const app = createApp(App);
+    app.provide<KeycloakInstance>('keycloack', keycloak);
+    app.use(router)
+    app.use(store)
+    app.use(CoreuiVue)
+    app.provide('icons', icons)
+    app.component('CIcon', CIcon)
+    app.component('DocsCallout', DocsCallout)
+    app.component('DocsExample', DocsExample)
 
-/* add font awesome icon component */
-app.component('font-awesome-icon', FontAwesomeIcon)
-/////////////////FONTAWESOME CONFIG END////////////////////
-
-
-app.mount('#app')
+    app.mount('#app');
+    window.localStorage.setItem('keycloakToken', keycloak.token)
+    console.log(keycloak.token);
+    await router.push('/')
+  }
+});
