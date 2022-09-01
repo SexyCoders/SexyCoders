@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  database:
+    container_name: master_database
+    image: mariadb:10.2
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=master
+      - MYSQL_DATABASE=master
+      - MYSQL_USER=master
+      - MYSQL_PASSWORD=master
+    networks:
+      - master
+    volumes:
+      - /srv/dev/manager/mariadb/data:/var/lib/mysql
+      - /srv/dev/manager/mariadb/config:/etc/mysql
+  company-cache:
+    image: redis:7
+    container_name: master_company_cache
+    networks:
+      - master
+  mongodb:
+    image: mongo:5.0
+    container_name: master_mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    networks:
+      - master
+    volumes:
+      - /srv/dev/manager/mongo/data:/data/db
+      - /srv/dev/manager/mongo/config:/data/configdb
+  api:
+    image: registry.sexycoders.org/master-api:1
+    container_name: master_api
+    networks:
+      - master
+    volumes:
+      - /home/sotiris/Projects/uniclient/rest:/data
+    ports:
+      - 9000:80
+networks:
+  master:
+    name: master

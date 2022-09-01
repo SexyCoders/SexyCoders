@@ -8,11 +8,72 @@ import CIcon from '@coreui/icons-vue'
 import { iconsSet as icons } from '@/assets/icons'
 import DocsCallout from '@/components/DocsCallout'
 import DocsExample from '@/components/DocsExample'
+import $ from "jquery";
 
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 
 //KEYCLOAK
 //
+function resolveApiEndpoint(endpoint){
+  $.ajax({
+    type: 'GET',
+    url: "http://localhost:8989/realms/testing/.well-known/openid-configuration",
+    success:
+    (response) =>
+        {
+          store.data.tmp.lastResolvedEndpoint=response[endpoint];
+        },
+    error:
+    (response) =>
+          {
+            alert("Api could not be resolved!\nPlease reach out to the system admin!");
+          },
+      async:false
+      });
+};
+function getUserInfo(token){
+  resolveApiEndpoint('userinfo_endpoint');
+  $.ajax({
+    type: 'GET',
+    url: store.data.tmp.lastResolvedEndpoint,
+    headers: {
+      'Authorization': 'Bearer '+token
+    },
+    success:
+    (response) =>
+        {
+          store.data.tmp.userinfo=response;
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+
+};
+function resolve(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.datacenter.rest+"/resolve/company",
+    success:
+    (response) =>
+        {
+          store.data.tmp.userinfo=response;
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+  }
+
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
   realm: process.env.VUE_APP_KEYCLOAK_OPTIONS_REALM,
@@ -35,6 +96,19 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.provide<KeycloakInstance>('keycloack', keycloak);
     app.use(router)
     app.use(store)
+    store.DEBUG=process.env.VUE_APP_DEBUG;
+    store.data={};
+    store.data.tmp={};
+    store.datacenter={};
+    store.datacenter.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
+    console.log("store init");
+
+    window.localStorage.setItem('keycloakToken', keycloak.token)
+    getUserInfo(keycloak.token);
+    console.log(store.data.tmp.userinfo);
+
+    resolve(keycloak.token);
+
     app.use(CoreuiVue)
     app.provide('icons', icons)
     app.component('CIcon', CIcon)
@@ -42,8 +116,6 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.component('DocsExample', DocsExample)
 
     app.mount('#app');
-    window.localStorage.setItem('keycloakToken', keycloak.token)
-    console.log(keycloak.token);
     await router.push('/')
   }
 });

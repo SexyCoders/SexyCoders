@@ -1,26 +1,28 @@
 version: '3.7'
 
 networks:
-  sso:
-    name: sso
+  master:
+    name: master
 
 services:
   database:
     image: postgres:14
+    container_name: sso_database
     environment:
       - POSTGRES_USER=keycloak
       - POSTGRES_PASSWORD=keycloak
       - POSTGRES_DB=keycloak
     networks:
-      - sso
+      - master
     ports:
       - 5432:5432
     volumes:
       - /var/opt/sso-dev/database:/var/lib/postgresql/data
   keycloak:
     image: keycloak/keycloak:17.0.0
+    container_name: sso_keycloak
     networks:
-      - sso
+      - master
     environment:
       DB_VENDOR: POSTGRES
       DB_DATABASE: keycloak
