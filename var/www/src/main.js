@@ -52,7 +52,7 @@ function getUserInfo(token){
       });
 
 };
-function resolve(token)
+function resolveCompany(token)
   {
     var send={};
     send.token=token;
@@ -61,6 +61,27 @@ function resolve(token)
     type: 'POST',
     data: send, 
     url: store.datacenter.rest+"/resolve/company",
+    success:
+    (response) =>
+        {
+          store.data.tmp.userinfo=response;
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+  }
+function resolveGroup(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.datacenter.rest+"/resolve/group",
     success:
     (response) =>
         {
@@ -107,7 +128,17 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     getUserInfo(keycloak.token);
     console.log(store.data.tmp.userinfo);
 
-    resolve(keycloak.token);
+    resolveCompany(keycloak.token);
+    console.log(store.data.tmp.userinfo);
+
+    resolveGroup(keycloak.token);
+    console.log(atob(store.data.tmp.userinfo));
+
+    var ta=[];
+    ta.push('managers');
+    ta.push('coders');
+    console.log(ta);
+    console.log(JSON.stringify(ta));
 
     app.use(CoreuiVue)
     app.provide('icons', icons)

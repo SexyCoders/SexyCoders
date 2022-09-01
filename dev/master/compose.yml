@@ -4,7 +4,6 @@ services:
   database:
     container_name: master_database
     image: mariadb:10.2
-    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=master
       - MYSQL_DATABASE=master
@@ -18,6 +17,11 @@ services:
   company-cache:
     image: redis:7
     container_name: master_company_cache
+    networks:
+      - master
+  group-cache:
+    image: redis:7
+    container_name: master_group_cache
     networks:
       - master
   mongodb:
