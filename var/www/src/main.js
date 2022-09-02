@@ -14,6 +14,8 @@ import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 
 //KEYCLOAK
 //
+
+
 function resolveApiEndpoint(endpoint){
   $.ajax({
     type: 'GET',
@@ -64,7 +66,7 @@ function resolveCompany(token)
     success:
     (response) =>
         {
-          store.etc.company=JSON.parse(atob(response));
+          store.etc.company=JSON.parse(atob(response)).company;
         },
     error:
     (response) =>
@@ -85,7 +87,7 @@ function resolveGroup(token)
     success:
     (response) =>
         {
-          store.etc.group=JSON.parse(atob(response));
+          store.etc.group=JSON.parse(atob(response)).groups;
         },
     error:
     (response) =>
@@ -107,7 +109,7 @@ function getServices(token)
     success:
     (response) =>
         {
-          store.etc.services=JSON.parse(atob(response));
+          store.etc.services=JSON.parse(atob(response)).services;
         },
     error:
     (response) =>
@@ -129,7 +131,7 @@ function getDatabases(token)
     success:
     (response) =>
         {
-          store.etc.databases=JSON.parse(atob(response));
+          store.etc.databases=JSON.parse(atob(response)).databases;
         },
     error:
     (response) =>
@@ -138,6 +140,60 @@ function getDatabases(token)
       async:false
       });
   }
+
+//function createMenuObject()
+  //{
+    //var t=[
+      //{
+        //component: 'CNavItem',
+        //name: 'Dashboard',
+        //to: '/dashboard',
+        //icon: 'cil-speedometer',
+        //badge: {
+          //color: 'primary',
+          //text: 'NEW',
+        //},
+      //},
+    //];
+
+    /////////////////////////////////////////
+    ////MANAGE
+    /////////////////////////////////////////
+    //t.push(
+      //{
+        //component: 'CNavTitle',
+        //name: 'MANAGE',
+      //},
+    //);
+
+    /////////////////////////////////////////
+    ////DATABASES
+    /////////////////////////////////////////
+    //t.push(
+      //{
+        //component: 'CNavTitle',
+        //name: 'DATABASES',
+      //},
+    //);
+      //console.log(store.etc.databases);
+      ////this.$store.etc.databases.forEach((database) => {
+            ////t.push(
+              ////{
+                ////component: 'CNavItem',
+                ////name: 'Colors',
+                ////to: '/theme/colors',
+                //////icon: 'cil-drop',
+              ////},
+            ////);
+          ////});
+    //t.push(
+      //{
+        //component: 'CNavTitle',
+        //name: 'SPREADSHEETS',
+      //},
+    //);
+  //return t;
+  //};
 
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
@@ -159,12 +215,11 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
 
     const app = createApp(App);
     app.provide<KeycloakInstance>('keycloack', keycloak);
-    app.use(router)
     app.use(store)
     store.DEBUG=process.env.VUE_APP_DEBUG;
     store.etc={};
-    store.tmp={};
     store.etc.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
+    store.tmp={};
     store.data={};
     console.log("store init");
 
@@ -184,6 +239,9 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     getDatabases(keycloak.token);
     console.log(JSON.stringify(store.etc.databases));
 
+    //window.menuObject=createMenuObject();
+
+    app.use(router)
     app.use(CoreuiVue)
     app.provide('icons', icons)
     app.component('CIcon', CIcon)

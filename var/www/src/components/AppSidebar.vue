@@ -23,7 +23,18 @@
         :height="35"
       />
     </CSidebarBrand>
-    <AppSidebarNav />
+    <!--<AppSidebarNav />-->
+    <CSidebarNav>
+    <li class="nav-title">MANAGE</li>
+    <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$router.push('/services/'+service.name);">
+      {{service.name}}
+    </CNavItem>
+    <li class="nav-title">DATABASES</li>
+    <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$router.push('/databases/'+database.name);">
+      {{database.name}}
+    </CNavItem>
+    <li class="nav-title">SPREADSHEETS</li>
+    </CSidebarNav>
     <CSidebarToggler
       class="d-none d-lg-flex"
       @click="$store.commit('toggleUnfoldable')"
