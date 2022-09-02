@@ -171,8 +171,8 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     console.log("store init");
 
     window.localStorage.setItem('keycloakToken', keycloak.token)
-    getUserInfo(keycloak.token);
-    console.log(JSON.stringify(store.etc.user));
+    //getUserInfo(keycloak.token);
+    //console.log(JSON.stringify(store.etc.user));
 
     resolveCompany(keycloak.token);
     console.log(JSON.stringify(store.etc.company));
