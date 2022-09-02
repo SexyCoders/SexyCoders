@@ -21,7 +21,7 @@ function resolveApiEndpoint(endpoint){
     success:
     (response) =>
         {
-          store.data.tmp.lastResolvedEndpoint=response[endpoint];
+          store.tmp.lastResolvedEndpoint=response[endpoint];
         },
     error:
     (response) =>
@@ -35,14 +35,14 @@ function getUserInfo(token){
   resolveApiEndpoint('userinfo_endpoint');
   $.ajax({
     type: 'GET',
-    url: store.data.tmp.lastResolvedEndpoint,
+    url: store.tmp.lastResolvedEndpoint,
     headers: {
       'Authorization': 'Bearer '+token
     },
     success:
     (response) =>
         {
-          store.data.tmp.userinfo=response;
+          store.etc.user=response;
         },
     error:
     (response) =>
@@ -60,11 +60,11 @@ function resolveCompany(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.datacenter.rest+"/resolve/company",
+    url: store.etc.rest+"/resolve/company",
     success:
     (response) =>
         {
-          store.data.tmp.userinfo=response;
+          store.etc.company=JSON.parse(atob(response));
         },
     error:
     (response) =>
@@ -81,11 +81,11 @@ function resolveGroup(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.datacenter.rest+"/resolve/group",
+    url: store.etc.rest+"/resolve/group",
     success:
     (response) =>
         {
-          store.data.tmp.userinfo=response;
+          store.etc.group=JSON.parse(atob(response));
         },
     error:
     (response) =>
@@ -103,11 +103,33 @@ function getServices(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.datacenter.rest+"/etc/services",
+    url: store.etc.rest+"/etc/services",
     success:
     (response) =>
         {
-          store.data.tmp.userinfo=response;
+          store.etc.services=JSON.parse(atob(response));
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+  }
+
+function getDatabases(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.etc.rest+"/etc/databases",
+    success:
+    (response) =>
+        {
+          store.etc.databases=JSON.parse(atob(response));
         },
     error:
     (response) =>
@@ -140,30 +162,27 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.use(router)
     app.use(store)
     store.DEBUG=process.env.VUE_APP_DEBUG;
+    store.etc={};
+    store.tmp={};
+    store.etc.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
     store.data={};
-    store.data.tmp={};
-    store.datacenter={};
-    store.datacenter.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
     console.log("store init");
 
     window.localStorage.setItem('keycloakToken', keycloak.token)
     getUserInfo(keycloak.token);
-    console.log(store.data.tmp.userinfo);
+    console.log(JSON.stringify(store.etc.user));
 
     resolveCompany(keycloak.token);
-    console.log(store.data.tmp.userinfo);
+    console.log(JSON.stringify(store.etc.company));
 
     resolveGroup(keycloak.token);
-    console.log(atob(store.data.tmp.userinfo));
+    console.log(JSON.stringify(store.etc.group));
 
     getServices(keycloak.token);
-    console.log(atob(store.data.tmp.userinfo));
+    console.log(JSON.stringify(store.etc.services));
 
-    var ta=[];
-    ta.push('managers');
-    ta.push('coders');
-    console.log(ta);
-    console.log(JSON.stringify(ta));
+    getDatabases(keycloak.token);
+    console.log(JSON.stringify(store.etc.databases));
 
     app.use(CoreuiVue)
     app.provide('icons', icons)

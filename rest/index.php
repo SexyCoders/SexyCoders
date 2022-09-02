@@ -38,11 +38,11 @@ $app->post('/etc/services',function(Request $request, Response $response){
     $data=json_decode(auth($data->token));
     $response->getBody()->write(base64_encode(json_encode(getActiveServices($data))));
 });
-//$app->post('/etc/databases',function(Request $request, Response $response){
-    //$data=json_decode(base64_decode($request->getBody()));
-    //$data=json_decode(auth($data->token));
-    //$response->getBody()->write(base64_encode(json_encode(getUserDatabases($data))));
-//});
+$app->post('/etc/databases',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(getUserDatabases($data))));
+});
 
 
 
