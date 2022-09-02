@@ -95,6 +95,28 @@ function resolveGroup(token)
       });
   }
 
+function getServices(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.datacenter.rest+"/etc/services",
+    success:
+    (response) =>
+        {
+          store.data.tmp.userinfo=response;
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+  }
+
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
   realm: process.env.VUE_APP_KEYCLOAK_OPTIONS_REALM,
@@ -132,6 +154,9 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     console.log(store.data.tmp.userinfo);
 
     resolveGroup(keycloak.token);
+    console.log(atob(store.data.tmp.userinfo));
+
+    getServices(keycloak.token);
     console.log(atob(store.data.tmp.userinfo));
 
     var ta=[];

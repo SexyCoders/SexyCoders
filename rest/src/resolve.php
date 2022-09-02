@@ -4,7 +4,7 @@ function resolveCompany($data)
     {
         $ResponseData=new stdClass;
         $user_redis = new Redis();
-        $user_redis->connect('master_company_cache', 6379);
+        $user_redis->connect('master_company-cache', 6379);
         $ResponseData->company=$user_redis->get($data->sub);
         if(!$ResponseData->company)
             {
@@ -23,7 +23,7 @@ function resolveCompany($data)
                 $ResponseData->company=$stmt->fetch()['company'];
 
                 $user_redis = new Redis();
-                $user_redis->connect('master_company_cache', 6379);
+                $user_redis->connect('master_company-cache', 6379);
                 $user_redis->set($data->sub,$ResponseData->company);
             }    
     return $ResponseData;
@@ -33,7 +33,7 @@ function resolveGroup($data)
     {
         $ResponseData=new stdClass;
         $user_redis = new Redis();
-        $user_redis->connect('master_group_cache', 6379);
+        $user_redis->connect('master_group-cache', 6379);
         $ResponseData->groups=json_decode($user_redis->get($data->sub));
         if(!$ResponseData->groups)
             {
@@ -52,7 +52,7 @@ function resolveGroup($data)
                 $ResponseData->groups=json_decode($stmt->fetch()['groups']);
 
                 $user_redis = new Redis();
-                $user_redis->connect('master_group_cache', 6379);
+                $user_redis->connect('master_group-cache', 6379);
                 $user_redis->set($data->sub,json_encode($ResponseData->groups));
             }    
     return $ResponseData;

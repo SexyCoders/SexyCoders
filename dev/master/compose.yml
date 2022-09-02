@@ -16,12 +16,22 @@ services:
       - /srv/dev/manager/mariadb/config:/etc/mysql
   company-cache:
     image: redis:7
-    container_name: master_company_cache
+    container_name: master_company-cache
     networks:
       - master
   group-cache:
     image: redis:7
-    container_name: master_group_cache
+    container_name: master_group-cache
+    networks:
+      - master
+  services-cache:
+    image: redis:7
+    container_name: master_services-cache
+    networks:
+      - master
+  databases-cache:
+    image: redis:7
+    container_name: master_databases-cache
     networks:
       - master
   mongodb:
