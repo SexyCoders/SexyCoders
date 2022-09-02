@@ -23,7 +23,6 @@
         :height="35"
       />
     </CSidebarBrand>
-    <!--<AppSidebarNav />-->
     <CSidebarNav>
     <li class="nav-title">MANAGE</li>
     <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$router.push('/services/'+service.name);">
@@ -45,13 +44,11 @@
 <script>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { AppSidebarNav } from './AppSidebarNav'
 import { logoNegative } from '@/assets/brand/logo-negative'
 import { sygnet } from '@/assets/brand/sygnet'
 export default {
   name: 'AppSidebar',
   components: {
-    AppSidebarNav,
   },
   setup() {
     const store = useStore()
