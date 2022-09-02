@@ -141,34 +141,6 @@ function getDatabases(token)
       });
   }
 
-function test(token)
-  {
-    var send={};
-    send.token=token;
-    send.data="test";
-    send.path="/databases/test/GET";
-    send.pos=5;
-    send.count=5;
-    send.company=store.etc.company;
-    send=btoa(JSON.stringify(send));
-  $.ajax({
-    type: 'POST',
-    data: send, 
-    url: store.etc.rest+"/serve",
-    success:
-    (response) =>
-        {
-          store.tmp.test=JSON.parse(atob(response));
-        },
-    error:
-    (response) =>
-          {
-          },
-      async:false
-      });
-  }
-
-
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
   realm: process.env.VUE_APP_KEYCLOAK_OPTIONS_REALM,
@@ -193,6 +165,7 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     store.DEBUG=process.env.VUE_APP_DEBUG;
     store.etc={};
     store.etc.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
+    store.etc.token=keycloak.token;
     store.tmp={};
     store.data={};
     console.log("store init");
@@ -212,11 +185,6 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
 
     getDatabases(keycloak.token);
     console.log(JSON.stringify(store.etc.databases));
-
-
-    test(keycloak.token);
-    console.log(JSON.stringify(store.tmp.test));
-    //window.menuObject=createMenuObject();
 
     app.use(router)
     app.use(CoreuiVue)

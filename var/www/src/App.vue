@@ -3,7 +3,6 @@
 </template>
 
 <script>
-//import $ from "jquery";
 export default {
   name: 'App',
   components: {
@@ -57,7 +56,6 @@ export default {
             name: 'DATABASES',
           },
         );
-          console.log(this.$store.etc.databases);
           this.$store.etc.databases.forEach((database) => {
                 t.push(
                   {

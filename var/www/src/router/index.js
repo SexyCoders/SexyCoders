@@ -26,6 +26,8 @@ const routes = [
       {
         path: '/databases/:database_name',
         name: 'Databases',
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ '../components/Database.vue'),
       },
       //{
         //path: '/theme/colors',
