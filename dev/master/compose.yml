@@ -24,14 +24,9 @@ services:
     container_name: master_group-cache
     networks:
       - master
-  services-cache:
+  api-cache:
     image: redis:7
-    container_name: master_services-cache
-    networks:
-      - master
-  databases-cache:
-    image: redis:7
-    container_name: master_databases-cache
+    container_name: master_api-cache
     networks:
       - master
   mongodb:
@@ -51,9 +46,18 @@ services:
     networks:
       - master
     volumes:
-      - /home/sotiris/Projects/uniclient/rest:/data
+      - /home/sotiris/Projects/uniclient/sys/api:/data
     ports:
       - 9000:80
+  test_client_api:
+    image: registry.sexycoders.org/master-api:1
+    container_name: 202979fda92402efd25f47c0f4176a74-api
+    networks:
+      - master
+    volumes:
+      - /home/sotiris/Projects/uniclient/usr/api:/data
+    expose:
+      - 80
 networks:
   master:
     name: master

@@ -141,59 +141,29 @@ function getDatabases(token)
       });
   }
 
-//function createMenuObject()
-  //{
-    //var t=[
-      //{
-        //component: 'CNavItem',
-        //name: 'Dashboard',
-        //to: '/dashboard',
-        //icon: 'cil-speedometer',
-        //badge: {
-          //color: 'primary',
-          //text: 'NEW',
-        //},
-      //},
-    //];
+function test(token)
+  {
+    var send={};
+    send.token=token;
+    send.data="test";
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.etc.rest+"/serve",
+    success:
+    (response) =>
+        {
+          store.tmp.test=JSON.parse(atob(response));
+        },
+    error:
+    (response) =>
+          {
+          },
+      async:false
+      });
+  }
 
-    /////////////////////////////////////////
-    ////MANAGE
-    /////////////////////////////////////////
-    //t.push(
-      //{
-        //component: 'CNavTitle',
-        //name: 'MANAGE',
-      //},
-    //);
-
-    /////////////////////////////////////////
-    ////DATABASES
-    /////////////////////////////////////////
-    //t.push(
-      //{
-        //component: 'CNavTitle',
-        //name: 'DATABASES',
-      //},
-    //);
-      //console.log(store.etc.databases);
-      ////this.$store.etc.databases.forEach((database) => {
-            ////t.push(
-              ////{
-                ////component: 'CNavItem',
-                ////name: 'Colors',
-                ////to: '/theme/colors',
-                //////icon: 'cil-drop',
-              ////},
-            ////);
-          ////});
-    //t.push(
-      //{
-        //component: 'CNavTitle',
-        //name: 'SPREADSHEETS',
-      //},
-    //);
-  //return t;
-  //};
 
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
@@ -239,6 +209,9 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     getDatabases(keycloak.token);
     console.log(JSON.stringify(store.etc.databases));
 
+
+    test(keycloak.token);
+    console.log(JSON.stringify(store.tmp.test));
     //window.menuObject=createMenuObject();
 
     app.use(router)

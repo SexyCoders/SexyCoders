@@ -1,0 +1,111 @@
+<?php
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+
+require './vendor/autoload.php';
+require './src/auth.php';
+require './src/resolve.php';
+require './src/etc.php';
+
+$app = new Slim\App;
+
+////////////
+//HELLO
+////////////
+$app->get('/hello', function (Request $request, Response $response, array $args) {
+    $response->getBody()->write("Hello, this is the uniclient api resolver! No milf porn here were sorry, please refer to https://www.pornhub.com/");
+});
+$app->post('/hello', function (Request $request, Response $response, array $args) {
+    $response->getBody()->write("Hello, this is the uniclient api resolver! No milf porn here were sorry, please refer to https://www.pornhub.com/");
+});
+
+
+////////////
+//RESOLVE
+////////////
+$app->post('/resolve/company',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(resolveCompany($data))));
+});
+$app->post('/resolve/group',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(resolveGroup($data))));
+});
+
+////////////
+//ETC
+////////////
+$app->post('/etc/services',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(getActiveServices($data))));
+});
+$app->post('/etc/databases',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(getUserDatabases($data))));
+});
+
+////////////
+//SERVE
+////////////
+$app->post('/serve',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $user_company=resolveCompany($data)->company;
+    $ResponseData=new stdClass;
+
+    //resolve company api location
+    $user_redis = new Redis();
+    $user_redis->connect('master_api-cache', 6379);
+    $ResponseData->api_location=$user_redis->get($user_company);
+    if(!$ResponseData->api_location)
+        {
+
+            $pdo = new \pdo(
+            //"mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master',$passwd[0] ,
+            "mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master','master' ,
+            [
+            \pdo::ATTR_ERRMODE            => \pdo::ERRMODE_EXCEPTION,
+            \pdo::ATTR_DEFAULT_FETCH_MODE => \pdo::FETCH_ASSOC,
+            \pdo::ATTR_EMULATE_PREPARES   => false,
+            ]); 
+
+            $stmt = $pdo->prepare("select location from apis where company=?");
+            $stmt->execute([$user_company]);
+            $ResponseData->api_location=$stmt->fetch()['location'];
+
+            $user_redis = new Redis();
+            $user_redis->connect('master_api-cache', 6379);
+            $user_redis->set($data->sub,$ResponseData->api_location);
+
+        }
+
+    //check if stack is up
+            if($socket =@ fsockopen($ResponseData->api_location, 80, $errno, $errstr, 0)) {
+                $ResponseData->PING="GOOD";
+                fclose($socket);
+            } else {
+                $ResponseData->PING="BAD";
+            }
+
+    //command passthough to the api
+        $ch = curl_init("http://".$ResponseData->api_location.":80".$data->path);
+        //$ch = curl_init("http://".$ResponseData->api_location.":80/hello");
+        curl_setopt($ch, CURLOPT_POST,1 );
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$req_data->data);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: text/plain'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER,0);
+        $data = curl_exec($ch);
+        curl_close($ch); 
+        
+    //return result directly from the api
+    $req_data->test=$data;
+    $response->getBody()->write(json_encode($req_data));
+    //$response->getBody()->write($data);
+});
+
+$app->run();
