@@ -92,10 +92,9 @@ $app->post('/serve',function(Request $request, Response $response){
             }
 
     //command passthough to the api
-        $ch = curl_init("http://".$ResponseData->api_location.":80".$data->path);
-        //$ch = curl_init("http://".$ResponseData->api_location.":80/hello");
+        $ch = curl_init("http://".$ResponseData->api_location.":80".$req_data->path);
         curl_setopt($ch, CURLOPT_POST,1 );
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$req_data->data);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,base64_encode(json_encode($req_data)));
         curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: text/plain'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER,0);
@@ -103,9 +102,9 @@ $app->post('/serve',function(Request $request, Response $response){
         curl_close($ch); 
         
     //return result directly from the api
-    $req_data->test=$data;
-    $response->getBody()->write(json_encode($req_data));
-    //$response->getBody()->write($data);
+    //$req_data->test=$data;
+    //$response->getBody()->write(json_encode($req_data));
+    $response->getBody()->write($data);
 });
 
 $app->run();

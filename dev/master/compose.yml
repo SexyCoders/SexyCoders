@@ -40,6 +40,17 @@ services:
     volumes:
       - /srv/dev/manager/mongo/data:/data/db
       - /srv/dev/manager/mongo/config:/data/configdb
+  test_client-mongodb:
+    image: mongo:5.0
+    container_name: 202979fda92402efd25f47c0f4176a74_mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    networks:
+      - master
+    volumes:
+      - /srv/dev/manager/test_client_mongo/data:/data/db
+      - /srv/dev/manager/test_client_mongo/config:/data/configdb
   api:
     image: registry.sexycoders.org/master-api:1
     container_name: master_api

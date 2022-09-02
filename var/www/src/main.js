@@ -146,6 +146,10 @@ function test(token)
     var send={};
     send.token=token;
     send.data="test";
+    send.path="/databases/test/GET";
+    send.pos=5;
+    send.count=5;
+    send.company=store.etc.company;
     send=btoa(JSON.stringify(send));
   $.ajax({
     type: 'POST',
