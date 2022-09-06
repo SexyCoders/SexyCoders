@@ -12,15 +12,17 @@ services:
       - POSTGRES_USER=keycloak
       - POSTGRES_PASSWORD=keycloak
       - POSTGRES_DB=keycloak
+    restart: unless-stopped
     networks:
       - master
     ports:
       - 5432:5432
     volumes:
-      - /var/opt/sso-dev/database:/var/lib/postgresql/data
+      - /srv/sso-dev/database:/var/lib/postgresql/data
   keycloak:
     image: keycloak/keycloak:17.0.0
     container_name: sso_keycloak
+    restart: unless-stopped
     networks:
       - master
     environment:

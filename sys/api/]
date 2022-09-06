@@ -28,27 +28,27 @@ function getUserDatabases($data)
         $databases_db=(($mongo)->master->databases);
         
         //get all databases where user is owner
-        $t=array('owner'=>$data->sub);
-        $databases=$databases_db->find($t);
-        foreach ($databases as $database) {
-            array_push($ResponseData->databases,$database);
-        }
+        //$t=array('owner'=>$data->sub);
+        //$databases=$databases_db->find($t);
+        //foreach ($databases as $database) {
+            //array_push($ResponseData->databases,$database);
+        //}
 
         //get all databases where user is in group and group has read permissions, or where 'others' have read permissions
         //BUT user is not owner to avoid duplicates with the above query
         $matcher=array(
             'owner'=>array('$ne'=>$data->sub),
-            '$or'=>
+            '$or'=>array(
                 array(
-                    array('$and'=>array(array('group'=>array('$in'=>$groups)),array('permissions.g'=>array('$regex'=>'r')))),
-                    array('permissions.o'=>array('$regex'=>'r'))
-                ),
+                    '$and'=>array(array('group'=>array('$in'=>$groups),array('permissions.g'=>array('$regex'=>'/r/')))),
+                    array('permissions.o'=>array('$regex'=>'/r/'))
+                )
+            )
         );
-        $databases=$databases_db->find($matcher);
+        $databases1=$databases_db->find($matcher);
         foreach ($databases as $database) {
             array_push($ResponseData->databases,$database);
-            }
-        //$ResponseData->test=json_encode($matcher);
+        }
 
     return $ResponseData;
     };

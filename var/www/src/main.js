@@ -131,6 +131,7 @@ function getDatabases(token)
     success:
     (response) =>
         {
+          console.dir(JSON.parse(atob(response)));
           store.etc.databases=JSON.parse(atob(response)).databases;
         },
     error:
