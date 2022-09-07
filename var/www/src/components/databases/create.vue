@@ -1,23 +1,24 @@
 <template>
+  <CForm v-on:submit.prevent="this.createDatabase()">
 <h3>general info</h3>
 <CInputGroup class="mb-3">
   <CInputGroupText id="basic-addon1">Database Name</CInputGroupText>
-  <CFormInput placeholder="database name" aria-label="database_id" v-model="this.$data.form_data.db_name" aria-describedby="basic-addon1"/>
+  <CFormInput placeholder="database name" aria-label="database_id" v-model="this.$data.form_data.database_name" aria-describedby="basic-addon1" required feedbackValid="Looks good!" @input="this.$data.form_data.database_id=(this.$data.form_data.database_name?this.$data.MD5(this.$data.form_data.database_name+(new Date())+this.$store.etc.company):'')"/>
 </CInputGroup>
 
 <CInputGroup class="mb-3">
   <CInputGroupText id="basic-addon1">Database ID</CInputGroupText>
-  <CFormInput :placeholder="this.$data.form_data.db_name?this.$data.MD5(this.$data.form_data.db_name+(new Date())+this.$store.etc.company):''" aria-label="database_id" aria-describedby="basic-addon1" disabled/>
+  <CFormInput v-model="this.$data.form_data.database_id" aria-label="database_id" aria-describedby="basic-addon1"/>
 </CInputGroup>
 
 <CInputGroup class="mb-3">
   <CInputGroupText id="basic-addon1">Date</CInputGroupText>
-  <CFormInput :placeholder="this.$data.date" aria-label="database_date" aria-describedby="basic-addon1" disabled/>
+  <CFormInput aria-label="database_date" v-model="this.$data.form_data.date" aria-describedby="basic-addon1" readonly/>
 </CInputGroup>
 
 <CInputGroup class="mb-3">
   <CInputGroupText id="basic-addon1">User</CInputGroupText>
-  <CFormInput :placeholder="this.$store.etc.user.preferred_username" aria-label="database_user" aria-describedby="basic-addon1" disabled/>
+  <CFormInput v-model="this.$data.form_data.user" aria-label="database_user" aria-describedby="basic-addon1" readonly/>
 </CInputGroup>
 
 <h3>data fields</h3>
@@ -38,36 +39,40 @@
 
 
 <CInputGroup class="mb-3" v-for="j in this.$data.field_count">
-  <CInputGroupText id="basic-addon1">Field Name</CInputGroupText>
-  <CFormInput placeholder="name" aria-label="field_name" v-model="this.$data.form_data.db_fields[j].field_name" aria-describedby="basic-addon1"/>
+  <CInputGroupText id="basic-addon1" required>Field Name</CInputGroupText>
+  <CFormInput placeholder="name" aria-label="field_name" v-model="this.$data.form_data.db_fields[j-1].name" aria-describedby="basic-addon1" required/>
 
-  <CInputGroupText id="basic-addon1">Field Type</CInputGroupText>
+  <CInputGroupText id="basic-addon1" >Field Type</CInputGroupText>
   <CFormSelect
+
   aria-label="field_type"
   :options="[
     { label: 'text', value: 'text' },
     { label: 'number', value: 'number' },
     { label: 'date', value: 'date' },
-  ]">
+  ]" v-model="this.$data.form_data.db_fields[j-1].type" required>
 </CFormSelect>
 
-  <CInputGroupText id="basic-addon1">Field Default Value</CInputGroupText>
-  <CFormInput placeholder="leave empty for none" aria-label="field_default" aria-describedby="basic-addon1"/>
+  <CInputGroupText id="basic-addon1" >Field Default Value</CInputGroupText>
+  <CFormInput placeholder="leave empty for none" aria-label="default" aria-describedby="basic-addon1" v-model="this.$data.form_data.db_fields[j-1].default" required/>
 </CInputGroup>
 
-<CButton color="success" v-on:click="this.createDatabase();">Create Database</CButton>
+<CButton color="success" type="submit">Create Database</CButton>
+</CForm>
+
 </template>
 
 <script>
+import $ from "jquery";
 export default {
   name: 'createDatabase',
   components: {
   },
   data() {
   return{
-    date:new Date(),
     form_data:{},
     MD5:require('md5'),
+    NAMES:require('docker-names'),
     field_count:1,
   }
   },
@@ -78,14 +83,40 @@ export default {
   beforeCreated()  {
   },
   created()  {
-    this.$data.date=new Date();
-    this.$data.form_data.db_name="";
+    this.$data.form_data.date=new Date();
     this.$data.form_data.db_fields=[];
-    this.$data.form_data.db_fields[1]={};
+    this.$data.form_data.db_fields[0]={};
+    this.$data.form_data.user=this.$store.etc.user.sub;
+    this.$data.form_data.database_name=this.$data.NAMES.getRandomName();
+    this.$data.form_data.database_id=(this.$data.form_data.database_name?this.$data.MD5(this.$data.form_data.database_name+(new Date())+this.$store.etc.company):'');
   },
   computed()  {
   },
   methods : {
+    createDatabase(){console.log(JSON.stringify(this.$data.form_data))
+    },
+//    createDatabase(){
+//        var send={};
+//        send.token=this.$store.etc.token;
+//        send.path="/databases/create";
+//        send.data=this.$data.form_data;
+//        send=btoa(JSON.stringify(send));
+//      $.ajax({
+//        type: 'POST',
+//        data: send, 
+//        url: store.etc.rest+"/serve",
+//        success:
+//        (response) =>
+//            {
+//              console.log(JSON.parse(atob(response)).data);
+//            },
+//        error:
+//        (response) =>
+//              {
+//              },
+//          async:false
+//          });
+//    }
   }
 }
 </script>

@@ -51,6 +51,7 @@
     "ag-grid-vue3": "^25.3.1",
     "core-js": "^3.19.0",
     "cors": "^2.8.5",
+    "docker-names": "^1.2.1",
     "jquery": "^3.6.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.23",
