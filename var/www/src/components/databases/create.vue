@@ -8,7 +8,7 @@
 
 <CInputGroup class="mb-3">
   <CInputGroupText id="basic-addon1">Database ID</CInputGroupText>
-  <CFormInput v-model="this.$data.form_data.database_id" aria-label="database_id" aria-describedby="basic-addon1"/>
+  <CFormInput v-model="this.$data.form_data.database_id" aria-label="database_id" aria-describedby="basic-addon1" readonly/>
 </CInputGroup>
 
 <CInputGroup class="mb-3">
