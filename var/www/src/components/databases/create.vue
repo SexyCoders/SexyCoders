@@ -47,14 +47,14 @@
 
   aria-label="field_type"
   :options="[
-    { label: 'text', value: 'text' },
+    { label: 'text', value: 'text' ,default: true},
     { label: 'number', value: 'number' },
     { label: 'date', value: 'date' },
   ]" v-model="this.$data.form_data.db_fields[j-1].type" required>
 </CFormSelect>
 
   <CInputGroupText id="basic-addon1" >Field Default Value</CInputGroupText>
-  <CFormInput placeholder="leave empty for none" aria-label="default" aria-describedby="basic-addon1" v-model="this.$data.form_data.db_fields[j-1].default" required/>
+  <CFormInput placeholder="leave empty for none" aria-label="default" aria-describedby="basic-addon1" v-model="this.$data.form_data.db_fields[j-1].default"/>
 </CInputGroup>
 
 <CButton color="success" type="submit">Create Database</CButton>
@@ -93,7 +93,13 @@ export default {
   computed()  {
   },
   methods : {
-    createDatabase(){console.log(JSON.stringify(this.$data.form_data))
+    createDatabase(){
+      this.$data.form_data.db_fields.forEach((field)=>{
+        field.true_name=field.name;
+        if(!field.type)
+          field.type='text';
+      });
+      console.log(JSON.stringify(this.$data.form_data))
     },
 //    createDatabase(){
 //        var send={};
