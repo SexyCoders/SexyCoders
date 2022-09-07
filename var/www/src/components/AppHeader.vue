@@ -19,6 +19,16 @@
         </CNavItem>
       </CHeaderNav>
       <CHeaderNav>
+      <CDropdown color="secondary" togglerText="Dropdown button">
+        <CDropdownToggle component="a" color="success">Create</CDropdownToggle>
+        <CDropdownMenu>
+        <CNavItem href="#" v-for="action in this.$data.actions" v-on:click.prevent="this.$router.push('/create/'+action.name);" >
+          <font-awesome-icon :icon="action.icon"/>
+            {{action.name}}
+          </CNavItem>
+        </CDropdownMenu>
+      </CDropdown>
+
         <CNavItem>
           <CNavLink href="#">
             <CIcon class="mx-2" icon="cil-bell" size="lg" />
@@ -53,6 +63,27 @@ export default {
   components: {
     AppBreadcrumb,
     AppHeaderDropdownAccnt,
+  },
+  data() {
+  return{
+    actions:[],
+  }
+  },
+  mounted() {
+   // this.createMenuObject();
+    //window.menuObject=this.$data.menu;
+  },
+  beforeUnmount() {
+  },
+  beforeCreated()  {
+  },
+  created()  {
+    this.createActions();
+  },
+  methods : {
+    createActions(){
+      this.$data.actions.push({name:'database',icon:'fa-solid fa-database'});
+    },
   },
   setup() {
     return {

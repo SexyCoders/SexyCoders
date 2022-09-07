@@ -56,6 +56,7 @@ export default {
             name: 'DATABASES',
           },
         );
+        console.log(this.$store.etc.databases);
           this.$store.etc.databases.forEach((database) => {
                 t.push(
                   {

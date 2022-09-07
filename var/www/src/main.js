@@ -6,12 +6,17 @@ import store from './store'
 import CoreuiVue from '@coreui/vue'
 import CIcon from '@coreui/icons-vue'
 import { iconsSet as icons } from '@/assets/icons'
+
 import DocsCallout from '@/components/DocsCallout'
 import DocsExample from '@/components/DocsExample'
 import $ from "jquery";
 
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
 //KEYCLOAK
 //
 
@@ -131,7 +136,6 @@ function getDatabases(token)
     success:
     (response) =>
         {
-          console.dir(JSON.parse(atob(response)));
           store.etc.databases=JSON.parse(atob(response)).databases;
         },
     error:
@@ -172,8 +176,8 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     console.log("store init");
 
     window.localStorage.setItem('keycloakToken', keycloak.token)
-    //getUserInfo(keycloak.token);
-    //console.log(JSON.stringify(store.etc.user));
+    getUserInfo(keycloak.token);
+    console.log(JSON.stringify(store.etc.user));
 
     resolveCompany(keycloak.token);
     console.log(JSON.stringify(store.etc.company));
@@ -193,6 +197,7 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.component('CIcon', CIcon)
     app.component('DocsCallout', DocsCallout)
     app.component('DocsExample', DocsExample)
+    app.component('font-awesome-icon', FontAwesomeIcon)
 
     app.mount('#app');
     await router.push('/')
