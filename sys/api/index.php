@@ -33,6 +33,12 @@ $app->post('/resolve/group',function(Request $request, Response $response){
     $data=json_decode(auth($data->token));
     $response->getBody()->write(base64_encode(json_encode(resolveGroup($data))));
 });
+$app->post('/resolve/default',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(getGroup($data))));
+});
+
 
 ////////////
 //ETC

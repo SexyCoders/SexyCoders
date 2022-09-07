@@ -100,29 +100,29 @@ export default {
           field.type='text';
       });
       console.log(JSON.stringify(this.$data.form_data))
-    },
+//    },
 //    createDatabase(){
-//        var send={};
-//        send.token=this.$store.etc.token;
-//        send.path="/databases/create";
-//        send.data=this.$data.form_data;
-//        send=btoa(JSON.stringify(send));
-//      $.ajax({
-//        type: 'POST',
-//        data: send, 
-//        url: store.etc.rest+"/serve",
-//        success:
-//        (response) =>
-//            {
-//              console.log(JSON.parse(atob(response)).data);
-//            },
-//        error:
-//        (response) =>
-//              {
-//              },
-//          async:false
-//          });
-//    }
+        var send={};
+        send.token=this.$store.etc.token;
+        send.path="/databases/create";
+        send.data=this.$data.form_data;
+        send=btoa(JSON.stringify(send));
+      $.ajax({
+        type: 'POST',
+        data: send, 
+        url: this.$store.etc.rest+"/serve",
+        success:
+        (response) =>
+            {
+              console.log(JSON.parse(atob(response)));
+            },
+        error:
+        (response) =>
+              {
+              },
+          async:false
+          });
+    }
   }
 }
 </script>
