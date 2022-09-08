@@ -110,7 +110,7 @@ export default {
       $.ajax({
         type: 'POST',
         data: send, 
-        url: this.$store.etc.rest+"/serve",
+        url: this.$store.etc.rest+"/bin/create/database",
         success:
         (response) =>
             {

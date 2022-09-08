@@ -55,6 +55,15 @@ $app->post('/etc/databases',function(Request $request, Response $response){
 });
 
 ////////////
+//BIN
+////////////
+$app->post('/bin/create/database',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(createUserDatabase($req_data))));
+});
+
+////////////
 //SERVE
 ////////////
 $app->post('/serve',function(Request $request, Response $response){
