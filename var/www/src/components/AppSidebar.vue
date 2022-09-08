@@ -12,10 +12,9 @@
     "
   >
     <CSidebarBrand>
-      <CIcon
-        custom-class-name="sidebar-brand-full"
-        :icon="logoNegative"
-        :height="35"
+      <img
+        :src='this.$data.logo'
+        :height="50"
       />
       <CIcon
         custom-class-name="sidebar-brand-narrow"
@@ -24,20 +23,26 @@
       />
     </CSidebarBrand>
     <CSidebarNav>
-    <li class="nav-title">MANAGE</li>
-    <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">
-      {{service.name}}
-    </CNavItem>
-    <li class="nav-title">DATABASES</li>
-    <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">
-      {{database.database_name}}
-    </CNavItem>
-    <li class="nav-title">SPREADSHEETS</li>
-    </CSidebarNav>
-    <CSidebarToggler
-      class="d-none d-lg-flex"
-      @click="$store.commit('toggleUnfoldable')"
-    />
+    <li class="nav-title">
+      <h5>MANAGE</h5>
+      <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">
+        {{service.name}}
+      </CNavItem>
+    </li>
+    <li class="nav-title">
+      <h5>DATABASES</h5>
+      <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">
+        {{database.database_name}}
+      </CNavItem>
+    </li>
+    <li class="nav-title">
+      <h5>SPREADSHEETS</h5>
+    </li>
+      </CSidebarNav>
+      <CSidebarToggler
+        class="d-none d-lg-flex"
+        @click="$store.commit('toggleUnfoldable')"
+      />
   </CSidebar>
 </template>
 
@@ -48,6 +53,11 @@ import { logoNegative } from '@/assets/brand/logo-negative'
 import { sygnet } from '@/assets/brand/sygnet'
 export default {
   name: 'AppSidebar',
+  data() {
+  return{
+    logo:'https://lib.sexycoders.org/logos/uniclient_r_classic_logo_no_bg.png',
+  }
+  },
   components: {
   },
   setup() {
