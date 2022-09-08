@@ -67,7 +67,8 @@ function createUserDatabase($req_data)
 
 
         $ResponseData=new stdClass;
-        $ResponseData->test=$data;
+        $ResponseData->error=0;
+        //$ResponseData->test=$data;
         $mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
         //$db_name=$data->database_id;
         $db=(($mongo)->master->databases);
@@ -84,8 +85,11 @@ function createUserDatabase($req_data)
             ),
             'db_fields'=>$data->db_fields,
         );
-        $ResponseData->check=$mongo_data;
-        $ResponseData->t=json_encode($db->insertOne($mongo_data));
+        //$ResponseData->check=$mongo_data;
+        $t=$db->insertOne($mongo_data);
+        if($t->getInsertedCount()!=1)
+            $ResponseData->error=1;
+        //$ResponseData->testing_something=$ResponseData->t->getInsertedCount();
         //$response->getBody()->write(base64_encode(json_encode($ResponseData)));
     return $ResponseData;
     }

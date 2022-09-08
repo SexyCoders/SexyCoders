@@ -114,7 +114,11 @@ export default {
         success:
         (response) =>
             {
-              console.log(JSON.parse(atob(response)));
+              var res=JSON.parse(atob(response));
+              if(res.error===1)
+                alert('There was an error creating the database! Please try again!');
+              else
+                this.$router.push('/');
             },
         error:
         (response) =>

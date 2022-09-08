@@ -29,8 +29,8 @@
       {{service.name}}
     </CNavItem>
     <li class="nav-title">DATABASES</li>
-    <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.name);">
-      {{database.name}}
+    <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">
+      {{database.database_name}}
     </CNavItem>
     <li class="nav-title">SPREADSHEETS</li>
     </CSidebarNav>
