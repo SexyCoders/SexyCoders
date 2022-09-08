@@ -57,7 +57,7 @@ function createUserDatabase($req_data)
         //injecting default group of user
         $t=new stdClass;
         $t->sub=$data->user;
-        $data->group=getGroup($t);
+        $data->group=getGroup($t)->default_group;
         
         //injecting default permissions
         $data->permissions=new stdClass;
