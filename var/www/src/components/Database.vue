@@ -1,20 +1,38 @@
 <template>
-        <vue-good-table
-      :columns="run.table_columns"
-      :rows="run.table_rows"
-      :line-numbers="true"
-      styleClass="vgt-table condensed striped"
-      :search-options="{
-        enabled: true,
-        placeholder: 'search',
-      }"
-      :pagination-options="{
-        enabled: true,
-        perPage: 10,
-        perPageDropdown: [10, 20, 50, 100],
-      }"
-      v-on:row-click="onRowClick"
-      />
+  <CContainer>
+    <CRow>
+    <h3>
+    <font-awesome-icon icon="fas fa-database"/>
+      {{this.$data.run.database_obj.database_name}}
+      <CButton color="success">new</CButton>{{" "}}
+    <CButton color="warning">manage</CButton>{{" "}}
+    <CButton color="secondary" v-on:click="this.getDatabase(this.$store.etc.token)">refresh</CButton>
+    </h3>
+    <a>(id={{this.$data.run.database_obj.database_id}})</a>
+    </CRow>
+    <CRow>
+      <vue-good-table
+        :columns="run.table_columns"
+        :rows="run.table_rows"
+        :line-numbers="true"
+        styleClass="vgt-table condensed striped"
+        :search-options="{
+          enabled: true,
+          placeholder: 'search',
+        }"
+        :pagination-options="{
+          enabled: true,
+          perPage: 10,
+          perPageDropdown: [10, 20, 50, 100],
+        }"
+        v-on:row-click="onRowClick"
+        >
+        <!--<div slot="table-actions">-->
+          <!--This will show up on the top right of the table.-->
+        <!--</div>-->
+      </vue-good-table>
+    </CRow>
+  </CContainer>
 </template>
 
 <script>
@@ -42,10 +60,10 @@ export default {
   },
   methods : {
   onRowClick(params){
-      this.$data.selection=this.$data.run.db_data.filter((row)=>{
+      this.$data.selection=JSON.parse(JSON.stringify(this.$data.run.db_data.filter((row)=>{
         return row._id['$oid']===params.row.id
-      },params)[0];
-    console.log(this.$data.selection);
+      },params)[0]));
+    //console.log(this.$data.selection);
       var htmlstring='<center><table >';
         this.$data.selection['_id']=this.$data.selection['_id'].$oid;
         Object.keys(this.$data.selection).forEach((key)=>{
@@ -58,8 +76,8 @@ export default {
         showConfirmButton: true,
         showCancelButton: true,
         focusConfirm: false,
-        cancelButtonText:'<i class="fa fa-thumbs-down">close</i>',
-        confirmButtonText:'<i class="fa fa-thumbs-up">edit</i>',
+        cancelButtonText:'<a>close</a>',
+        confirmButtonText:'<a>edit</a>',
       }).then((e)=>{
         if(e.isDismissed)
           {  
@@ -72,7 +90,7 @@ export default {
   },
   onEdit(){
       var htmlstring='<center><table >';
-      console.log(this.$data.selection);
+      //console.log(this.$data.selection);
         Object.keys(this.$data.selection).forEach((key)=>{
           htmlstring+='<tr><th>'+key+':</th> <td><input type="text" value="'+this.$data.selection[key]+'"/></td></tr>';
         });
@@ -84,9 +102,9 @@ export default {
         showCancelButton: true,
         showDenyButton: true,
         focusConfirm: false,
-        cancelButtonText:'<i class="fa fa-thumbs-down">close</i>',
-        confirmButtonText:'<i class="fa fa-thumbs-up">save</i>',
-        denyButtonText:'<i class="fa fa-thumbs-up">delete</i>',
+        cancelButtonText:'<a>close</a>',
+        confirmButtonText:'<a>save</a>',
+        denyButtonText:'<a>delete</a>',
       }).then((e)=>{
         if(e.isDismissed)
           {  
@@ -98,7 +116,16 @@ export default {
       });
   },
     onSave(){
-      console.log("saving changes to entry "+this.$data.selection._id);
+      this.$swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        title: 'updated successfully',
+        text: this.$data.selection._id
+      })
     },
   getDatabase(token)
     {
@@ -117,6 +144,8 @@ export default {
       success:
       (response) =>
           {
+            this.$data.run.table_columns=[];
+            this.$data.run.table_rows=[];
             var a=JSON.parse(atob(response)).data;
             var t = JSON.parse(JSON.stringify(a));
             this.$data.run.db_data=a;
@@ -134,38 +163,6 @@ export default {
               delete obj['_id'];
             });
             this.$data.run.table_rows=t;
-//            this.$swal.fire({
-//              title: 'Submit your Github username',
-//              input: 'text',
-//              inputAttributes: {
-//                autocapitalize: 'off'
-//              },
-//              showCancelButton: true,
-//              confirmButtonText: 'Look up',
-//              showLoaderOnConfirm: true,
-//              preConfirm: (login) => {
-//                return fetch(`//api.github.com/users/${login}`)
-//                  .then(response => {
-//                    if (!response.ok) {
-//                      throw new Error(response.statusText)
-//                    }
-//                    return response.json()
-//                  })
-//                  .catch(error => {
-//                    Swal.showValidationMessage(
-//                      `Request failed: ${error}`
-//                    )
-//                  })
-//              },
-//              allowOutsideClick: () => !Swal.isLoading()
-//            }).then((result) => {
-//              if (result.isConfirmed) {
-//                Swal.fire({
-//                  title: `${result.value.login}'s avatar`,
-//                  imageUrl: result.value.avatar_url
-//                })
-//              }
-//            });
           },
       error:
       (response) =>
