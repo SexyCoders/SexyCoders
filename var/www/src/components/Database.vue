@@ -49,6 +49,7 @@ export default {
         table_columns: [],
         table_rows: [],
         selection:'',
+        tmp:{},
       },
     };
   },
@@ -92,7 +93,7 @@ export default {
       var htmlstring='<center><table >';
       //console.log(this.$data.selection);
         Object.keys(this.$data.selection).forEach((key)=>{
-          htmlstring+='<tr><th>'+key+':</th> <td><input type="text" value="'+this.$data.selection[key]+'"/></td></tr>';
+          htmlstring+='<tr><th>'+key+':</th> <td><input id='+this.$data.selection["_id"]+key+' type="text" class="swal2-input" value="'+this.$data.selection[key]+'"></td></tr>';
         });
       htmlstring+='</table>';
         this.$swal.fire({
@@ -105,27 +106,65 @@ export default {
         cancelButtonText:'<a>close</a>',
         confirmButtonText:'<a>save</a>',
         denyButtonText:'<a>delete</a>',
+        preConfirm: () => {
+          var t=[];
+          Object.keys(this.$data.selection).forEach((key)=>{
+            console.log(this.$data.selection["_id"]+key)
+            t[key]=(document.getElementById(this.$data.selection["_id"]+key).value);
+          });
+          return t;
+        }
       }).then((e)=>{
         if(e.isDismissed)
           {  
           }
         else if(e.isConfirmed)
           {  
-            this.onSave();
-          }
-      });
+            console.log("value check");
+            console.log(e.value);
+            this.onSave(e.value);
+            this.$data.run.test=JSON.parse(JSON.stringify(e.value));
+          var send={};
+          send.token=this.$store.etc.token;
+          send.data=e.value;
+          send.path="/databases/"+this.$data.run.database_obj.database_id+"/UPDATE";
+          send.company=this.$store.etc.company;
+          send=btoa(JSON.stringify(send));
+          $.ajax({
+            type: 'POST',
+            data: send, 
+            url: this.$store.etc.rest+"/serve",
+            success:
+            (response) =>
+                {
+                  var a=JSON.parse(atob(response));
+                  console.log(a);
+                  //this.$swal.fire({
+                  //  toast: true,
+                  //  position: 'top-end',
+                  //  showConfirmButton: false,
+                  //  timer: 3000,
+                  //  timerProgressBar: true,
+                  //  icon: 'success',
+                  //  title: 'updated successfully',
+                  //  text: this.$data.selection._id
+                  //})
+                },
+            error:
+            (response) =>
+                  {
+                  },
+              async:false
+              });
+              }
+          });
   },
-    onSave(){
-      this.$swal.fire({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        title: 'updated successfully',
-        text: this.$data.selection._id
-      })
+    onSave(data){
+      console.log(this.$data.run.test);
+      console.log("test")
+      console.log(data);
+      //this.$data.tmp.data=JSON.parse(JSON.stringify(data));
+      //this.$data.tmp.data=JSON.parse(JSON.stringify(data));
     },
   getDatabase(token)
     {

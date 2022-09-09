@@ -68,6 +68,19 @@ $app->post('/databases/{db_id}/{command}', function (Request $request, Response 
                     array_push($ResponseData->data,$r);
                 }
             break;
+        case 'UPDATE':
+            //$t1=array(
+                //'_id'=>$req_data->data->_id,
+            //);
+            //$res=$db->updateOne($t1,$req_data->data);
+            ////$res=$db->find($t);
+            //$ResponseData->data=array();
+            //foreach($res as $r)
+                //{
+                    //array_push($ResponseData->data,$r);
+                //}
+                $ResponseData->test=$req_data;
+            break;
     }
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
