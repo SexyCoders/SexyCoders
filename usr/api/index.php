@@ -45,13 +45,13 @@ $app->post('/hello', function (Request $request, Response $response, array $args
 
 //get databases
 
-$app->post('/databases/{db_name}/{command}', function (Request $request, Response $response, array $args) {
-    $db_name = $args['db_name'];
+$app->post('/databases/{db_id}/{command}', function (Request $request, Response $response, array $args) {
+    $db_id = $args['db_id'];
     $command = $args['command'];
     $req_data=json_decode(base64_decode($request->getBody()));
     $ResponseData=new stdClass;
     $mongo=new MongoDB\Client("mongodb://mongo:mongo@".$req_data->company."_mongodb:27017");
-    $db=(($mongo)->databases->$db_name);
+    $db=(($mongo)->databases->$db_id);
 
     switch ($command) {
         case 'GET':

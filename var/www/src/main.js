@@ -17,8 +17,9 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 library.add(fas);
-//KEYCLOAK
-//
+
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 
 function resolveApiEndpoint(endpoint){
@@ -193,6 +194,7 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
 
     app.use(router)
     app.use(CoreuiVue)
+    app.use(VueSweetalert2);
     app.provide('icons', icons)
     app.component('CIcon', CIcon)
     app.component('DocsCallout', DocsCallout)
