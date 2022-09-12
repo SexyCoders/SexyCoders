@@ -171,6 +171,7 @@ export default {
       var send={};
       send.token=token;
       send.data="test";
+      console.log("loading database "+this.$data.run.database_obj.database_id);
       send.path="/databases/"+this.$data.run.database_obj.database_id+"/GET";
       send.pos=1;
       send.count=5;

@@ -21,7 +21,15 @@ export default {
   },
   created()  {
   },
+  computed() {
+  },
   methods : {
+    auth(){
+      var time = this;
+      setInterval(function () {
+       time.localTime = new Date().toLocaleTimeString();
+      }, 5000);
+    },
     createMenuObject()
       {
         var t=[

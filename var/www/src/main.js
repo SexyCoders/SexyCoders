@@ -204,4 +204,19 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.mount('#app');
     await router.push('/')
   }
+  setInterval(() => {
+    keycloak.updateToken(70).then((refreshed) => {
+      if (refreshed) {
+        Vue.$log.info('Token refreshed' + refreshed);
+      } else {
+        Vue.$log.warn('Token not refreshed, valid for '
+          + Math.round(keycloak.tokenParsed.exp + keycloak.timeSkew - new Date().getTime() / 1000) + ' seconds');
+      }
+    }).catch(() => {
+      Vue.$log.error('Failed to refresh token');
+    });
+  }, 6000)
+
+}).catch(() => {
+  Vue.$log.error("Authenticated Failed");
 });

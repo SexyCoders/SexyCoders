@@ -24,8 +24,8 @@ $app->post('/hello', function (Request $request, Response $response, array $args
 //RESOLVE
 ////////////
 $app->post('/resolve/company',function(Request $request, Response $response){
-    $data=json_decode(base64_decode($request->getBody()));
-    $data=json_decode(auth($data->token));
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
     $response->getBody()->write(base64_encode(json_encode(resolveCompany($data))));
 });
 $app->post('/resolve/group',function(Request $request, Response $response){
@@ -69,8 +69,9 @@ $app->post('/bin/create/database',function(Request $request, Response $response)
 $app->post('/serve',function(Request $request, Response $response){
     $req_data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($req_data->token));
-    $user_company=resolveCompany($data)->company;
     $ResponseData=new stdClass;
+    $ResponseData->test_input=$data;
+    $user_company=resolveCompany($data)->company;
 
     //resolve company api location
     $user_redis = new Redis();
@@ -113,13 +114,13 @@ $app->post('/serve',function(Request $request, Response $response){
         curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: text/plain'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER,0);
-        $data = curl_exec($ch);
+        $ResponseData->data = json_decode(base64_decode(curl_exec($ch)))->data;
         curl_close($ch); 
         
     //return result directly from the api
     //$req_data->test=$data;
     //$response->getBody()->write(json_encode($req_data));
-    $response->getBody()->write($data);
+    $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
 
 $app->run();
