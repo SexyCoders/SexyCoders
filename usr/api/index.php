@@ -69,10 +69,11 @@ $app->post('/databases/{db_id}/{command}', function (Request $request, Response 
                 }
             break;
         case 'UPDATE':
+            $t1=$req_data->data->id;
             //$t1=array(
                 //'_id'=>$req_data->data->_id,
             //);
-            //$res=$db->updateOne($t1,$req_data->data);
+            $res=$db->updateOne($t1,(array) $req_data->data);
             ////$res=$db->find($t);
             //$ResponseData->data=array();
             //foreach($res as $r)

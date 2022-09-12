@@ -9,6 +9,10 @@ require './src/etc.php';
 
 $app = new Slim\App;
 
+function CreateArray()
+    {
+    }
+
 ////////////
 //HELLO
 ////////////
@@ -70,7 +74,7 @@ $app->post('/serve',function(Request $request, Response $response){
     $req_data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($req_data->token));
     $ResponseData=new stdClass;
-    $ResponseData->test_input=$data;
+    //$ResponseData->test_input=$data;
     $user_company=resolveCompany($data)->company;
 
     //resolve company api location
@@ -117,9 +121,10 @@ $app->post('/serve',function(Request $request, Response $response){
         $ResponseData->data = json_decode(base64_decode(curl_exec($ch)))->data;
         curl_close($ch); 
         
-    //return result directly from the api
+    //encapsulate result from the api
     //$req_data->test=$data;
     //$response->getBody()->write(json_encode($req_data));
+    $ResponseData->input=$req_data;
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
 

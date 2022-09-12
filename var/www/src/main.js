@@ -200,23 +200,28 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.component('DocsCallout', DocsCallout)
     app.component('DocsExample', DocsExample)
     app.component('font-awesome-icon', FontAwesomeIcon)
+    const plugin = {
+      install() {
+        app.prototype.$CheckToken = () => {
+          keycloak.updateToken(70).then((refreshed) => {
+            if (refreshed) {
+              console.log('Token refreshed' + refreshed);
+            } else {
+            }
+          }).catch(() => {
+            console.log('Failed to refresh token');
+          });
+        }//'this is a plugin test' //this.$gPluginFun()
+      }
+    }
+
+    app.use(plugin);
+
+  setInterval(() => {
+    this.$checkToken();
+  }, 3000)
 
     app.mount('#app');
     await router.push('/')
   }
-  setInterval(() => {
-    keycloak.updateToken(70).then((refreshed) => {
-      if (refreshed) {
-        Vue.$log.info('Token refreshed' + refreshed);
-      } else {
-        Vue.$log.warn('Token not refreshed, valid for '
-          + Math.round(keycloak.tokenParsed.exp + keycloak.timeSkew - new Date().getTime() / 1000) + ' seconds');
-      }
-    }).catch(() => {
-      Vue.$log.error('Failed to refresh token');
-    });
-  }, 6000)
-
-}).catch(() => {
-  Vue.$log.error("Authenticated Failed");
 });

@@ -107,12 +107,12 @@ export default {
         confirmButtonText:'<a>save</a>',
         denyButtonText:'<a>delete</a>',
         preConfirm: () => {
-          var t=[];
+          this.$data.run.tmp.send_buffer=[];
           Object.keys(this.$data.selection).forEach((key)=>{
-            console.log(this.$data.selection["_id"]+key)
-            t[key]=(document.getElementById(this.$data.selection["_id"]+key).value);
+            console.log(this.$data.selection["_id"]+key);
+            this.$data.run.tmp.send_buffer[key]=(document.getElementById(this.$data.selection["_id"]+key).value);
           });
-          return t;
+          return 0;
         }
       }).then((e)=>{
         if(e.isDismissed)
@@ -120,13 +120,22 @@ export default {
           }
         else if(e.isConfirmed)
           {  
-            console.log("value check");
-            console.log(e.value);
-            this.onSave(e.value);
-            this.$data.run.test=JSON.parse(JSON.stringify(e.value));
+            //console.log("value check");
+            //var t=JSON.stringify(e.value);
+            //console.log(JSON.stringify(e))
+            //console.log("t is "+t);
+            //console.log(e.value);
+            //this.onSave(e.value);
+            //this.$data.run.test=JSON.parse(JSON.stringify(e.value));
+            console.log(this.$data.run.tmp.send_buffer);
           var send={};
+          send.test="";
           send.token=this.$store.etc.token;
-          send.data=e.value;
+          send.data={};
+          var t=Object.assign({},this.$data.run.tmp.send_buffer);
+          send.data.id=t._id
+          send.data.data=JSON.parse(JSON.stringify(t));
+          delete send.data.data._id;
           send.path="/databases/"+this.$data.run.database_obj.database_id+"/UPDATE";
           send.company=this.$store.etc.company;
           send=btoa(JSON.stringify(send));
