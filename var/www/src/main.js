@@ -22,7 +22,8 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 
-function resolveApiEndpoint(endpoint){
+function resolveApiEndpoint(endpoint)
+{
   $.ajax({
     type: 'GET',
     url: "http://localhost:8989/realms/testing/.well-known/openid-configuration",
@@ -34,32 +35,13 @@ function resolveApiEndpoint(endpoint){
     error:
     (response) =>
           {
+            onAuthError();
             alert("Api could not be resolved!\nPlease reach out to the system admin!");
           },
       async:false
       });
 };
-function getUserInfo(token){
-  resolveApiEndpoint('userinfo_endpoint');
-  $.ajax({
-    type: 'GET',
-    url: store.tmp.lastResolvedEndpoint,
-    headers: {
-      'Authorization': 'Bearer '+token
-    },
-    success:
-    (response) =>
-        {
-          store.etc.user=response;
-        },
-    error:
-    (response) =>
-          {
-          },
-      async:false
-      });
 
-};
 function resolveCompany(token)
   {
     var send={};
@@ -77,6 +59,7 @@ function resolveCompany(token)
     error:
     (response) =>
           {
+                    onAuthError();
           },
       async:false
       });
@@ -98,6 +81,7 @@ function resolveGroup(token)
     error:
     (response) =>
           {
+                    onAuthError();
           },
       async:false
       });
@@ -120,6 +104,7 @@ function getServices(token)
     error:
     (response) =>
           {
+                    onAuthError();
           },
       async:false
       });
@@ -142,10 +127,52 @@ function getDatabases(token)
     error:
     (response) =>
           {
+                    onAuthError();
           },
       async:false
       });
   }
+
+function getUserInfo(token){
+  resolveApiEndpoint('userinfo_endpoint');
+  $.ajax({
+    type: 'GET',
+    url: store.tmp.lastResolvedEndpoint,
+    headers: {
+      'Authorization': 'Bearer '+token
+    },
+    success:
+    (response) =>
+        {
+          store.etc.user=response;
+        },
+    error:
+    (response) =>
+          {
+                    onAuthError();
+          },
+      async:false
+      });
+
+};
+
+
+    const checkToken=function(){
+        keycloak.updateToken(70).then((refreshed) => {
+          if (refreshed)
+            console.log('Token refreshed' + refreshed);
+        }).catch(() => {
+          console.log('Failed to refresh token');
+          return 1;
+        });
+        return 0;
+      }//'this is a plugin test' //this.$gPluginFun()
+
+    const onAuthError=function(){
+      window.location.reload();
+    }
+
+
 
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
@@ -157,13 +184,10 @@ const initOptions = {
 
 let keycloak = Keycloak(initOptions);
 
-keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
-  if (!auth) {
-    window.location.reload();
-  } else {
+function main(){
     console.info("Authenticated");
 
-    await keycloak.loadUserInfo();
+    keycloak.loadUserInfo();
 
     const app = createApp(App);
     app.provide<KeycloakInstance>('keycloack', keycloak);
@@ -200,28 +224,19 @@ keycloak.init({ onLoad: 'login-required' }).then(async (auth) => {
     app.component('DocsCallout', DocsCallout)
     app.component('DocsExample', DocsExample)
     app.component('font-awesome-icon', FontAwesomeIcon)
-    const plugin = {
-      install() {
-        app.prototype.$CheckToken = () => {
-          keycloak.updateToken(70).then((refreshed) => {
-            if (refreshed) {
-              console.log('Token refreshed' + refreshed);
-            } else {
-            }
-          }).catch(() => {
-            console.log('Failed to refresh token');
-          });
-        }//'this is a plugin test' //this.$gPluginFun()
-      }
-    }
-
-    app.use(plugin);
+    app.provide('$checkToken',checkToken);
+    app.provide('$onAuthError',onAuthError);
 
   setInterval(() => {
-    this.$checkToken();
+    checkToken();
   }, 3000)
 
     app.mount('#app');
-    await router.push('/')
-  }
+    router.push('/')
+}
+keycloak.init({ onLoad: 'login-required' }).then((auth) => {
+  if (!auth)
+    window.location.reload();
+  else 
+    main();
 });

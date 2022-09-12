@@ -9,10 +9,6 @@ require './src/etc.php';
 
 $app = new Slim\App;
 
-function CreateArray()
-    {
-    }
-
 ////////////
 //HELLO
 ////////////
@@ -118,13 +114,16 @@ $app->post('/serve',function(Request $request, Response $response){
         curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: text/plain'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER,0);
-        $ResponseData->data = json_decode(base64_decode(curl_exec($ch)))->data;
+        $t_data=json_decode(base64_decode(curl_exec($ch)));
         curl_close($ch); 
         
-    //encapsulate result from the api
+    //encapsulate result, flags and debug data from the api
     //$req_data->test=$data;
     //$response->getBody()->write(json_encode($req_data));
-    $ResponseData->input=$req_data;
+    //$ResponseData->input=$req_data;
+    $ResponseData->data=$t_data->data;
+    $ResponseData->error=$t_data->error;
+    $ResponseData->debug=json_decode((json_encode($t_data->debug)));
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
 

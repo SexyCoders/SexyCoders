@@ -123,6 +123,9 @@ export default {
         error:
         (response) =>
               {
+                    this.$onAuthError();
+                    this.$onAuthError();
+                    this.$onAuthError();
               },
           async:false
           });

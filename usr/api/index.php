@@ -50,9 +50,13 @@ $app->post('/databases/{db_id}/{command}', function (Request $request, Response 
     $command = $args['command'];
     $req_data=json_decode(base64_decode($request->getBody()));
     $ResponseData=new stdClass;
-    $mongo=new MongoDB\Client("mongodb://mongo:mongo@".$req_data->company."_mongodb:27017");
+    $company=getCompany($req_data);
+    $mongo=new MongoDB\Client("mongodb://mongo:mongo@".$company."_mongodb:27017");
     $db=(($mongo)->databases->$db_id);
 
+    $ResponseData->data=array();
+    $ResponseData->debug=new stdClass;
+    $ResponseData->error=0;
     switch ($command) {
         case 'GET':
             $t=array();
@@ -62,25 +66,21 @@ $app->post('/databases/{db_id}/{command}', function (Request $request, Response 
             );
             $res=$db->find($t,$t1);
             //$res=$db->find($t);
-            $ResponseData->data=array();
             foreach($res as $r)
                 {
                     array_push($ResponseData->data,$r);
                 }
             break;
         case 'UPDATE':
-            $t1=$req_data->data->id;
-            //$t1=array(
-                //'_id'=>$req_data->data->_id,
-            //);
-            $res=$db->updateOne($t1,(array) $req_data->data);
-            ////$res=$db->find($t);
-            //$ResponseData->data=array();
-            //foreach($res as $r)
-                //{
-                    //array_push($ResponseData->data,$r);
-                //}
-                $ResponseData->test=$req_data;
+            $t1=array(
+                '_id'=>$req_data->data->id,
+            );
+            $res=$db->updateOne($t1,['$set'=>(array) $req_data->data]);
+            $ResponseData->debug->test_res=$res;
+            if($res->getUpsertedCount()!=1)
+                $ResponseData->error=1;
+                
+            //$ResponseData->data->test2=$res;
             break;
     }
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));

@@ -129,7 +129,7 @@ export default {
             //this.$data.run.test=JSON.parse(JSON.stringify(e.value));
             console.log(this.$data.run.tmp.send_buffer);
           var send={};
-          send.test="";
+          //send.test="";
           send.token=this.$store.etc.token;
           send.data={};
           var t=Object.assign({},this.$data.run.tmp.send_buffer);
@@ -137,7 +137,7 @@ export default {
           send.data.data=JSON.parse(JSON.stringify(t));
           delete send.data.data._id;
           send.path="/databases/"+this.$data.run.database_obj.database_id+"/UPDATE";
-          send.company=this.$store.etc.company;
+          //send.company=this.$store.etc.company;
           send=btoa(JSON.stringify(send));
           $.ajax({
             type: 'POST',
@@ -147,6 +147,8 @@ export default {
             (response) =>
                 {
                   var a=JSON.parse(atob(response));
+                  //if(a.error)
+                    //this.$onAuthError();
                   console.log(a);
                   //this.$swal.fire({
                   //  toast: true,
@@ -162,6 +164,7 @@ export default {
             error:
             (response) =>
                   {
+                    this.$onAuthError();
                   },
               async:false
               });
@@ -216,6 +219,7 @@ export default {
       error:
       (response) =>
             {
+                    this.$onAuthError();
             },
         async:false
         });
