@@ -1,25 +1,58 @@
 <template>
-  <router-view />
+  <div>
+    <AppSidebar v-if="this.$store.proc.layout.sidebar"/>
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+      <AppHeader v-if="this.$store.proc.layout.header"/>
+      <div class="body flex-grow-1 px-3">
+        <CContainer lg>
+          <router-view />
+        </CContainer>
+      </div>
+      <AppFooter v-if="this.$store.proc.layout.footer"/>
+    </div>
+  </div>
 </template>
 
 <script>
+import AppFooter from '@/components/AppFooter.vue'
+import AppHeader from '@/components/AppHeader.vue'
+import AppSidebar from '@/components/AppSidebar.vue'
+import { CContainer } from '@coreui/vue'
+
 export default {
-  name: 'App',
+  name: 'MainApp',
   components: {
+    AppFooter,
+    AppHeader,
+    AppSidebar,
+    CContainer,
   },
   data() {
   return{
   }
   },
+  created() {
+  },
   mounted() {
     this.createMenuObject();
     //window.menuObject=this.$data.menu;
+  },
+  metaInfo() {
+    return {
+            title: 'Home',
+            titleTemplate: '%s | My Awesome Webapp',
+            meta: [
+              { name: "robots", content: "index,follow" },
+            ],
+        }
   },
   beforeUnmount() {
   },
   beforeCreated()  {
   },
   created()  {
+    console.log(this.$store.proc.layout);
+    console.log('I AM RUNNING');
   },
   computed() {
   },

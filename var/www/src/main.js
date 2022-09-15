@@ -21,6 +21,9 @@ library.add(fas);
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
+import { plugin as vueMetaPlugin } from 'vue-meta'
+//import VueMeta from 'vue-meta'
+
 
 function resolveApiEndpoint(endpoint)
 {
@@ -198,6 +201,12 @@ function main(){
     store.etc.token=keycloak.token;
     store.tmp={};
     store.data={};
+    store.proc={};
+    store.proc.layout={};
+    store.proc.layout.sidebar=true;
+    store.proc.layout.header=true;
+    store.proc.layout.footer=true;
+
     console.log("store init");
 
     window.localStorage.setItem('keycloakToken', keycloak.token)
@@ -219,6 +228,7 @@ function main(){
     app.use(router)
     app.use(CoreuiVue)
     app.use(VueSweetalert2);
+    app.use(vueMetaPlugin,{refreshOnceOnNavigation: true});
     app.provide('icons', icons)
     app.component('CIcon', CIcon)
     app.component('DocsCallout', DocsCallout)
