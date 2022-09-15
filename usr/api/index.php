@@ -76,7 +76,9 @@ $app->post('/databases/{db_id}/{command}', function (Request $request, Response 
                 '_id'=>$req_data->data->id,
             );
             $res=$db->updateOne($t1,['$set'=>(array) $req_data->data]);
-            $ResponseData->debug->test_res=$res;
+            $ResponseData->debug->test_res=$res->getUpsertedCount();
+            $ResponseData->debug->matcher=$t1;
+            $ResponseData->debug->doc=(array)json_decode(json_encode($req_data->data->data));
             if($res->getUpsertedCount()!=1)
                 $ResponseData->error=1;
                 
