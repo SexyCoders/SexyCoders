@@ -43,10 +43,10 @@ $app->post('/resolve/default',function(Request $request, Response $response){
 ////////////
 //ETC
 ////////////
-$app->post('/etc/services',function(Request $request, Response $response){
+$app->post('/etc/courses',function(Request $request, Response $response){
     $data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($data->token));
-    $response->getBody()->write(base64_encode(json_encode(getActiveServices($data))));
+    $response->getBody()->write(base64_encode(json_encode(getCourses($data))));
 });
 $app->post('/etc/databases',function(Request $request, Response $response){
     $data=json_decode(base64_decode($request->getBody()));

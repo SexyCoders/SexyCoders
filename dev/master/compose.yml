@@ -42,41 +42,41 @@ services:
     networks:
       - master
     volumes:
-      - /srv/dev/manager/mongo/data:/data/db
-      - /srv/dev/manager/mongo/config:/data/configdb
+      - /srv/dev/elearning/mongo/data:/data/db
+      - /srv/dev/elearning/mongo/config:/data/configdb
     restart: unless-stopped
-  test_client-mongodb:
-    image: mongo:5.0
-    container_name: 202979fda92402efd25f47c0f4176a74_mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo
-      - MONGO_INITDB_ROOT_PASSWORD=mongo
-    networks:
-      - master
-    volumes:
-      - /srv/dev/manager/test_client_mongo/data:/data/db
-      - /srv/dev/manager/test_client_mongo/config:/data/configdb
-    restart: unless-stopped
+    #  test_client-mongodb:
+    #    image: mongo:5.0
+    #    container_name: 202979fda92402efd25f47c0f4176a74_mongodb
+    #    environment:
+    #      - MONGO_INITDB_ROOT_USERNAME=mongo
+    #      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    #    networks:
+    #      - master
+    #    volumes:
+    #      - /srv/dev/manager/test_client_mongo/data:/data/db
+    #      - /srv/dev/manager/test_client_mongo/config:/data/configdb
+    #    restart: unless-stopped
   api:
     image: registry.sexycoders.org/master-api:1
     container_name: master_api
     networks:
       - master
     volumes:
-      - /home/sotiris/Projects/uniclient/sys/api:/data
+      - /home/sotiris/Projects/elearning/sys/api:/data
     ports:
       - 9000:80
-    restart: unless-stopped
-  test_client_api:
-    image: registry.sexycoders.org/master-api:1
-    container_name: 202979fda92402efd25f47c0f4176a74-api
-    networks:
-      - master
-    volumes:
-      - /home/sotiris/Projects/uniclient/usr/api:/data
-    expose:
-      - 80
-    restart: unless-stopped
+        #    restart: unless-stopped
+        #  test_client_api:
+        #    image: registry.sexycoders.org/master-api:1
+        #    container_name: 202979fda92402efd25f47c0f4176a74-api
+        #    networks:
+        #      - master
+        #    volumes:
+        #      - /home/sotiris/Projects/uniclient/usr/api:/data
+        #    expose:
+        #      - 80
+        #    restart: unless-stopped
 networks:
   master:
-    name: master
+    name: elearning 
