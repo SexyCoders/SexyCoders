@@ -90,7 +90,7 @@ function resolveGroup(token)
       });
   }
 
-function getCourses(token)
+function getServices(token)
   {
     var send={};
     send.token=token;
@@ -98,11 +98,11 @@ function getCourses(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.etc.rest+"/etc/courses",
+    url: store.etc.rest+"/etc/services",
     success:
     (response) =>
         {
-          store.etc.courses=JSON.parse(atob(response)).courses;
+          store.etc.services=JSON.parse(atob(response)).services;
         },
     error:
     (response) =>
@@ -219,11 +219,11 @@ function main(){
     resolveGroup(keycloak.token);
     console.log(JSON.stringify(store.etc.group));
 
-    getCourses(keycloak.token);
-    console.log(JSON.stringify(store.etc.courses));
+    getServices(keycloak.token);
+    console.log(JSON.stringify(store.etc.services));
 
-    //getDatabases(keycloak.token);
-    //console.log(JSON.stringify(store.etc.databases));
+    getDatabases(keycloak.token);
+    console.log(JSON.stringify(store.etc.databases));
 
     app.use(router)
     app.use(CoreuiVue)

@@ -37,10 +37,10 @@ const routes = [
         name: 'Services',
       },
       {
-        path: '/courses/',
-        name: 'Courses',
+        path: '/databases/:database_name',
+        name: 'Databases',
         component: () =>
-          import(/* webpackChunkName: "dashboard" */ '../components/Courses.vue'),
+          import(/* webpackChunkName: "dashboard" */ '../components/Database.vue'),
       },
       {
         path: '/create/database',

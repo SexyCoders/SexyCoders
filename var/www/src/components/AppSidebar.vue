@@ -24,23 +24,19 @@
     </CSidebarBrand>
     <CSidebarNav>
     <li class="nav-title">
-      <!--<CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">-->
-      <CNavItem href="#" v-on:click.prevent="this.$router.push('/courses/');" >
-        <!--{{service.name}}-->
-          <font-awesome-icon icon="fa-regular fa-chalkboard-user" />
-      <h5>
-        COURSES
-      </h5>
+      <h5>MANAGE</h5>
+      <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">
+        {{service.name}}
       </CNavItem>
     </li>
     <li class="nav-title">
-      <!--<h5>DATABASES</h5>-->
-      <!--<CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">-->
-        <!--{{database.database_name}}-->
-      <!--</CNavItem>-->
+      <h5>DATABASES</h5>
+      <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">
+        {{database.database_name}}
+      </CNavItem>
     </li>
     <li class="nav-title">
-      <!--<h5>SPREADSHEETS</h5>-->
+      <h5>SPREADSHEETS</h5>
     </li>
       </CSidebarNav>
       <CSidebarToggler

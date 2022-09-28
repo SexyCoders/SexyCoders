@@ -65,57 +65,57 @@ export default {
     },
     createMenuObject()
       {
-//        var t=[
-//          {
-//            component: 'CNavItem',
-//            name: 'Dashboard',
-//            to: '/dashboard',
-//            icon: 'cil-speedometer',
-//            badge: {
-//              color: 'primary',
-//              text: 'NEW',
-//            },
-//          },
-//        ];
-//
-//        ///////////////////////////////////////
-//        //MANAGE
-//        ///////////////////////////////////////
-//        t.push(
-//          {
-//            component: 'CNavTitle',
-//            name: 'MANAGE',
-//          },
-//        );
-//
-//        ///////////////////////////////////////
-//        //DATABASES
-//        ///////////////////////////////////////
-//        t.push(
-//          {
-//            component: 'CNavTitle',
-//            name: 'DATABASES',
-//          },
-//        );
-//        console.log(this.$store.etc.databases);
-//          this.$store.etc.databases.forEach((database) => {
-//                t.push(
-//                  {
-//                    component: 'CNavItem',
-//                    name: 'Colors',
-//                    to: '/theme/colors',
-//                    //icon: 'cil-drop',
-//                  },
-//                );
-//              });
-//        t.push(
-//          {
-//            component: 'CNavTitle',
-//            name: 'SPREADSHEETS',
-//          },
-//        );
-//      this.$data.menu=t;
-//        window.menuObject=t;
+        var t=[
+          {
+            component: 'CNavItem',
+            name: 'Dashboard',
+            to: '/dashboard',
+            icon: 'cil-speedometer',
+            badge: {
+              color: 'primary',
+              text: 'NEW',
+            },
+          },
+        ];
+
+        ///////////////////////////////////////
+        //MANAGE
+        ///////////////////////////////////////
+        t.push(
+          {
+            component: 'CNavTitle',
+            name: 'MANAGE',
+          },
+        );
+
+        ///////////////////////////////////////
+        //DATABASES
+        ///////////////////////////////////////
+        t.push(
+          {
+            component: 'CNavTitle',
+            name: 'DATABASES',
+          },
+        );
+        console.log(this.$store.etc.databases);
+          this.$store.etc.databases.forEach((database) => {
+                t.push(
+                  {
+                    component: 'CNavItem',
+                    name: 'Colors',
+                    to: '/theme/colors',
+                    //icon: 'cil-drop',
+                  },
+                );
+              });
+        t.push(
+          {
+            component: 'CNavTitle',
+            name: 'SPREADSHEETS',
+          },
+        );
+      this.$data.menu=t;
+        window.menuObject=t;
       },
 
 }

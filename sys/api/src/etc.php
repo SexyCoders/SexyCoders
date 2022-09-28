@@ -1,47 +1,51 @@
 <?php
-function getCourses($data)
+function getActiveServices($data)
     {
         $ResponseData=new stdClass;
-        $ResponseData->courses=array();
-        //$groups=resolveGroup($data);
+        $ResponseData->services=array();
+        $groups=resolveGroup($data);
         $mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
-        $courses_db=(($mongo)->elearning->courses);
-                $t=array();
-                $courses=$courses_db->find($t);
-                foreach ($courses as $course) {
-                        array_push($ResponseData->courses,$course);
+        $services_db=(($mongo)->master->services);
+        foreach($groups->groups as $group){
+                $t=array(
+                'group'=>$group
+                );
+                $services=$services_db->find($t);
+                foreach ($services as $service) {
+                        array_push($ResponseData->services,$service);
         }
 
+        }
     return $ResponseData;
     };
 
-//function getUserDatabases($data)
-    //{
-        //$ResponseData=new stdClass;
-        //$ResponseData->databases=array();
-        //$groups=resolveGroup($data)->groups;
-        //$mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
-        //$databases_db=(($mongo)->master->databases);
+function getUserDatabases($data)
+    {
+        $ResponseData=new stdClass;
+        $ResponseData->databases=array();
+        $groups=resolveGroup($data)->groups;
+        $mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
+        $databases_db=(($mongo)->master->databases);
         
-        ////get all databases where user is owner
-        ////get all databases where user is in group and group has read permissions, or where 'others' have read permissions
-        ////BUT user is not owner to avoid duplicates with the above query
-        //$matcher=array(
-            //'$or'=>array(
-            //array('owner'=>array('$ne'=>$data->sub)),
-            //array('$or'=>
-                //array(
-                    //array('$and'=>array(array('group'=>array('$in'=>$groups)),array('permissions.g'=>array('$regex'=>'r')))),
-                    //array('permissions.o'=>array('$regex'=>'r'))
-                //)),
-        //));
-        //$databases=$databases_db->find($matcher);
-        //foreach ($databases as $database) {
-            //array_push($ResponseData->databases,$database);
-            //}
+        //get all databases where user is owner
+        //get all databases where user is in group and group has read permissions, or where 'others' have read permissions
+        //BUT user is not owner to avoid duplicates with the above query
+        $matcher=array(
+            '$or'=>array(
+            array('owner'=>array('$ne'=>$data->sub)),
+            array('$or'=>
+                array(
+                    array('$and'=>array(array('group'=>array('$in'=>$groups)),array('permissions.g'=>array('$regex'=>'r')))),
+                    array('permissions.o'=>array('$regex'=>'r'))
+                )),
+        ));
+        $databases=$databases_db->find($matcher);
+        foreach ($databases as $database) {
+            array_push($ResponseData->databases,$database);
+            }
 
-    //return $ResponseData;
-    //};
+    return $ResponseData;
+    };
 
 function createUserDatabase($req_data)
     {
