@@ -130,7 +130,7 @@ function getDatabases(token)
     error:
     (response) =>
           {
-                    onAuthError();
+            //onAuthError();
           },
       async:false
       });
