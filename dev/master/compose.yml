@@ -1,6 +1,16 @@
 version: '3.7'
 
 services:
+  sys_api:
+    image: httpd-php:latest # Which image to use? (reference: image created from dockerfile)
+    container_name: sys_api
+    networks:
+      - master
+    volumes:
+      - ./sys/api:/data # Sync the local folder with the docker folder
+    ports:
+      - 6464:80 # Specify the port that the api-docker is going to use
+    restart: unless-stopped
   database:
     container_name: master_database
     image: mariadb:10.2
