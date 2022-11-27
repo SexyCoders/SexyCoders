@@ -1,4 +1,7 @@
 <?php
+
+use Slim\Http\Response;
+
 function getGroup($data)
     {
         $ResponseData=new stdClass;
@@ -26,7 +29,7 @@ function resolveCompany($data)
         $ResponseData->company=$user_redis->get($data->sub);
         if(!$ResponseData->company)
             {
-
+                $flag = 0;
                 $pdo = new \pdo(
                 //"mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master',$passwd[0] ,
                 "mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master','master' ,
@@ -38,11 +41,20 @@ function resolveCompany($data)
 
                 $stmt = $pdo->prepare("select company from users where userid=?");
                 $stmt->execute([$data->sub]);
+                
                 $ResponseData->company=$stmt->fetch()['company'];
+                if ($ResponseData->company == null) {
+                    $ResponseData->company = "NOEXIST";
+                    $flag =  1;
+                }
 
+                if (!$flag)
+                {
                 $user_redis = new Redis();
                 $user_redis->connect('master_company-cache', 6379);
                 $user_redis->set($data->sub,$ResponseData->company);
+            }
+
             }    
     return $ResponseData;
     };
@@ -55,7 +67,7 @@ function resolveGroup($data)
         $ResponseData->groups=json_decode($user_redis->get($data->sub));
         if(!$ResponseData->groups)
             {
-
+                $flag2 = 0;
                 $pdo = new \pdo(
                 //"mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master',$passwd[0] ,
                 "mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master','master' ,
@@ -69,9 +81,16 @@ function resolveGroup($data)
                 $stmt->execute([$data->sub]);
                 $ResponseData->groups=json_decode($stmt->fetch()['groups']);
 
-                $user_redis = new Redis();
-                $user_redis->connect('master_group-cache', 6379);
-                $user_redis->set($data->sub,json_encode($ResponseData->groups));
+                if ($ResponseData->groups == null) {
+                    $ResponseData->groups = "NOEXIST";
+                    $flag2 =  1;
+                }
+
+                if (!$flag2) {
+                    $user_redis = new Redis();
+                    $user_redis->connect('master_group-cache', 6379);
+                    $user_redis->set($data->sub,json_encode($ResponseData->groups));    
+                }
             }    
     return $ResponseData;
     };

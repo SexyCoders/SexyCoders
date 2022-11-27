@@ -1,16 +1,16 @@
 version: '3.7'
 
 services:
-  sys_api:
-    image: httpd-php:latest # Which image to use? (reference: image created from dockerfile)
-    container_name: sys_api
-    networks:
-      - master
-    volumes:
-      - ./sys/api:/data # Sync the local folder with the docker folder
-    ports:
-      - 6464:80 # Specify the port that the api-docker is going to use
-    restart: unless-stopped
+  # sys_api:
+  #   image: httpd-php:latest # Which image to use? (reference: image created from dockerfile)
+  #   container_name: sys_api
+  #   networks:
+  #     - master
+  #   volumes:
+  #     - ./sys/api:/data # Sync the local folder with the docker folder
+  #   ports:
+  #     - 6464:80 # Specify the port that the api-docker is going to use
+  #   restart: unless-stopped
   database:
     container_name: master_database
     image: mariadb:10.2
@@ -55,18 +55,18 @@ services:
       - /srv/dev/manager/mongo/data:/data/db
       - /srv/dev/manager/mongo/config:/data/configdb
     restart: unless-stopped
-  test_client-mongodb:
-    image: mongo:5.0
-    container_name: 202979fda92402efd25f47c0f4176a74_mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo
-      - MONGO_INITDB_ROOT_PASSWORD=mongo
-    networks:
-      - master
-    volumes:
-      - /srv/dev/manager/test_client_mongo/data:/data/db
-      - /srv/dev/manager/test_client_mongo/config:/data/configdb
-    restart: unless-stopped
+  # test_client-mongodb:
+  #   image: mongo:5.0
+  #   container_name: 202979fda92402efd25f47c0f4176a74_mongodb
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=mongo
+  #     - MONGO_INITDB_ROOT_PASSWORD=mongo
+  #   networks:
+  #     - master
+  #   volumes:
+  #     - /srv/dev/manager/test_client_mongo/data:/data/db
+  #     - /srv/dev/manager/test_client_mongo/config:/data/configdb
+  #   restart: unless-stopped
   api:
     image: registry.sexycoders.org/master-api:1
     container_name: master_api
@@ -77,16 +77,16 @@ services:
     ports:
       - 9000:80
     restart: unless-stopped
-  test_client_api:
-    image: registry.sexycoders.org/master-api:1
-    container_name: 202979fda92402efd25f47c0f4176a74-api
-    networks:
-      - master
-    volumes:
-      - /home/sotiris/Projects/uniclient/usr/api:/data
-    expose:
-      - 80
-    restart: unless-stopped
+  # test_client_api:
+  #   image: registry.sexycoders.org/master-api:1
+  #   container_name: 202979fda92402efd25f47c0f4176a74-api
+  #   networks:
+  #     - master
+  #   volumes:
+  #     - /home/sotiris/Projects/uniclient/usr/api:/data
+  #   expose:
+  #     - 80
+  #   restart: unless-stopped
 networks:
   master:
     name: master

@@ -6,6 +6,9 @@ require './vendor/autoload.php';
 require './src/auth.php';
 require './src/resolve.php';
 require './src/etc.php';
+require './src/bin/user_db.php';
+require './src/bin/group.php';
+require './src/bin/user.php';
 
 $app = new Slim\App;
 
@@ -39,7 +42,6 @@ $app->post('/resolve/default',function(Request $request, Response $response){
     $response->getBody()->write(base64_encode(json_encode(getGroup($data))));
 });
 
-
 ////////////
 //ETC
 ////////////
@@ -54,6 +56,12 @@ $app->post('/etc/databases',function(Request $request, Response $response){
     $response->getBody()->write(base64_encode(json_encode(getUserDatabases($data))));
 });
 
+$app->post('/etc/users/check_exists',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(checkUserExists($data))));
+});
+
 ////////////
 //BIN
 ////////////
@@ -61,6 +69,20 @@ $app->post('/bin/create/database',function(Request $request, Response $response)
     $req_data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($req_data->token));
     $response->getBody()->write(base64_encode(json_encode(createUserDatabase($req_data))));
+});
+
+
+$app->post('/bin/create/group',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(createGroup($req_data))));
+});
+
+
+$app->post('/bin/create/user',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(createUser($req_data))));
 });
 
 ////////////
