@@ -265,20 +265,20 @@ function main(){
     getUserInfo(keycloak.token);
     console.log(JSON.stringify(store.etc.user));
 
-    checkUserExists(keycloak.token);
-    createGroup(keycloak.token);
+    //checkUserExists(keycloak.token);
+    //createGroup(keycloak.token);
 
-    resolveCompany(keycloak.token);
-    console.log(JSON.stringify(store.etc.company));
+    //resolveCompany(keycloak.token);
+    //console.log(JSON.stringify(store.etc.company));
 
-    resolveGroup(keycloak.token);
-    console.log(JSON.stringify(store.etc.group));
+    //resolveGroup(keycloak.token);
+    //console.log(JSON.stringify(store.etc.group));
 
-    getServices(keycloak.token);
-    console.log(JSON.stringify(store.etc.services));
+    //getServices(keycloak.token);
+    //console.log(JSON.stringify(store.etc.services));
 
-    getDatabases(keycloak.token);
-    console.log(JSON.stringify(store.etc.databases));
+    //getDatabases(keycloak.token);
+    //console.log(JSON.stringify(store.etc.databases));
 
     app.use(router)
     app.use(CoreuiVue)
