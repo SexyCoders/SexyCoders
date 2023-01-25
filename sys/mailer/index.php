@@ -64,7 +64,7 @@ $app->post('/hello', function (Request $request, Response $response, array $args
 
 
 ////////////
-//RESOLVE
+//MAILER
 ////////////
 $app->post('/webpage_contact',function(Request $request, Response $response){
 

@@ -112,6 +112,28 @@ function getServices(token)
       async:false
       });
   }
+function getActiveServices(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.etc.rest_debug+"/etc/services",
+    success:
+    (response) =>
+        {
+          store.etc.services=JSON.parse(atob(response)).services;
+        },
+    error:
+    (response) =>
+          {
+                    onAuthError();
+          },
+      async:false
+      });
+  }
 
 function getDatabases(token)
   {
@@ -265,14 +287,17 @@ function main(){
     getUserInfo(keycloak.token);
     console.log(JSON.stringify(store.etc.user));
 
-    //checkUserExists(keycloak.token);
-    //createGroup(keycloak.token);
 
-    //resolveCompany(keycloak.token);
-    //console.log(JSON.stringify(store.etc.company));
+    checkUserExists(keycloak.token);
+    createGroup(keycloak.token);
 
-    //resolveGroup(keycloak.token);
-    //console.log(JSON.stringify(store.etc.group));
+    resolveCompany(keycloak.token);
+    console.log(JSON.stringify(store.etc.company));
+
+    resolveGroup(keycloak.token);
+    console.log(JSON.stringify(store.etc.group));
+
+    getActiveServices(keycloak.token);
 
     //getServices(keycloak.token);
     //console.log(JSON.stringify(store.etc.services));

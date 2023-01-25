@@ -4,6 +4,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require './vendor/autoload.php';
 require './src/auth.php';
+require './src/curl.php';
 require './src/resolve.php';
 require './src/etc.php';
 require './src/bin/user_db.php';
@@ -59,7 +60,8 @@ $app->post('/etc/databases',function(Request $request, Response $response){
 $app->post('/etc/users/check_exists',function(Request $request, Response $response){
     $req_data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($req_data->token));
-    $response->getBody()->write(base64_encode(json_encode(checkUserExists($data))));
+    $response->getBody()->write(base64_encode(json_encode($data)));
+    //$response->getBody()->write(base64_encode(json_encode(checkUserExists($data))));
 });
 
 ////////////
@@ -97,7 +99,7 @@ $app->post('/serve',function(Request $request, Response $response){
 
     //resolve company api location
     $user_redis = new Redis();
-    $user_redis->connect('master_api-cache', 6379);
+    $user_redis->connect('master_api-cache', 6378);
     $ResponseData->api_location=$user_redis->get($user_company);
     if(!$ResponseData->api_location)
         {
@@ -149,4 +151,16 @@ $app->post('/serve',function(Request $request, Response $response){
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
 
+$app->post('/sbin/adduser',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    //$data=json_decode(auth($req_data->token));
+    $ResponseData=new stdClass;
+    //get correct endpoint location
+    $keycloak_host=exec("host sso_keycloak | awk '{printf $4}'");
+    $dest="http://".$keycloak_host.":8080/".;
+    
+    //call curl wrapper and perform task
+    curl($req_data->token,"","POST","");
+    $response->getBody()->write(base64_encode(json_encode($ResponseData)));
+});
 $app->run();

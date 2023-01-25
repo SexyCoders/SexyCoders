@@ -73,7 +73,7 @@ services:
     networks:
       - master
     volumes:
-      - /home/sotiris/Projects/uniclient/sys/api:/data
+      - /srv/projects/SexyCoders/sys/api:/data
     ports:
       - 9000:80
     restart: unless-stopped

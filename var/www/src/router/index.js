@@ -44,9 +44,15 @@ const routes = [
       },
       {
         path: '/create/database',
-        name: 'create',
+        name: 'create_database',
         component: () =>
           import(/* webpackChunkName: "dashboard" */ '../components/databases/create.vue'),
+      },
+      {
+        path: '/create/user',
+        name: 'create_user',
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ '../components/users/create.vue'),
       },
       //{
         //path: '/theme/colors',

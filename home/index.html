@@ -462,13 +462,14 @@
 								<div class="atf-contact-details">
 									<i class="fa fa-home"></i>
 									<h4>Address</h4>
-									<p>Dimitriou Moscha 8, Marousi 15124</p>
+									<p>Lytchett House, 13 Freeland Park<br> 
+									Wareham Road, Poole, Dorset, BH16 6FA</p>
 								</div>
 							
 								<div class="atf-contact-details">
 									<i class="fa fa-phone"></i>
-									<h4>Phone Number (10.30 - 14.30 local time)</h4>
-									<p>+30 6944968225</p>
+									<h4>Phone Number</h4>
+									<p>+30 6944968225 (10.30 - 14.30 EET)</p>
 								</div>
 						
 								<div class="atf-contact-details">
@@ -482,7 +483,7 @@
 						<div class="col-lg-6 col-12 my-auto mx-auto">
 							<div class="contact wow fadeIn" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
 								<h4>Stay Connected with us</h4>
-								<form id="contact-form" class="atf-contact-form form" method="POST" action="assets/php/mail.php">
+								<form id="contact-form" class="atf-contact-form form">
 									<div class="row">
 										<div class="form-group col-md-12">
 											<input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required="required">
@@ -498,7 +499,39 @@
 										</div>
 										<div class="col-md-12">
 											<div class="actions atf-contact-btn text-left">
-												<button type="submit" value="Submit Now" name="submit" id="submitButton" class="btn atf-themes-btn" title="Submit Your Message!">Send Message</button>
+												<button 
+													type="submit" 
+													value="Submit Now" 
+													name="submit" 
+													id="submitButton" 
+													class="btn atf-themes-btn" 
+													title="Submit Your Message!"
+													onclick="function mail(){
+													var send={};
+													send.from=document.getElementById('form_email').value;
+													send.name=document.getElementById('name').value;
+													send.subject=document.getElementById('subject').value;
+													send.body=document.getElementById('message').value;
+													console.log(send);
+													$.ajax({
+														type: 'POST',
+														data: send,
+														url: 'localhost:9900/webpage_contact',
+														success:
+														(response) =>
+															{
+															console.log(JSON.parse(atob(response)))
+															},
+														error:
+														(response) =>
+															{
+															},
+														async:false
+														});
+													}; mail(); return false;"
+													>
+													Send Message
+												</button>
 											</div>
 										</div>
 									</div>
@@ -581,7 +614,12 @@
 				<div class="atf-footer-boottom text-center mt-4">
 					<div class="row">
 						<div class="col-md-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-							<p>&copy;2022 SexyCoders - Coded with ❤ by Shane</p>
+							<p id='copyright'>
+							</p>
+															<script>
+																date=new Date();
+																document.getElementById('copyright').innerHTML="© 2019- "+date.getFullYear()+" SEXYCODERS LIMITED";
+															</script>
 						</div><!--- END COL -->
 					</div><!--- END ROW -->
 				</div>

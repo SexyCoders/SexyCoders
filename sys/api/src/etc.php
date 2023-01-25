@@ -41,6 +41,7 @@ function getActiveServices($data)
                 $stmt = $pdo->prepare("select exists(select * from users where userid =?) as exists_flag");
                 $stmt->execute([$data->sub]);
                 $ResponseData->user_exists=json_decode($stmt->fetch()['exists_flag']);
+                $ResponseData->test=$data->sub;
 
 
                 if ($ResponseData->user_exists == null) {
