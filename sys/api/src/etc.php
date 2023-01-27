@@ -19,7 +19,7 @@ function getActiveServices($data)
     return $ResponseData;
     };
 
-    function checkUserExists($data)
+function checkUserExists($data)
     {
         $ResponseData=new stdClass;
         // $user_redis = new Redis();

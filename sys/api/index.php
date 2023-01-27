@@ -10,6 +10,7 @@ require './src/etc.php';
 require './src/bin/user_db.php';
 require './src/bin/group.php';
 require './src/bin/user.php';
+require './src/bin/project.php';
 
 $app = new Slim\App;
 
@@ -50,6 +51,11 @@ $app->post('/etc/services',function(Request $request, Response $response){
     $data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($data->token));
     $response->getBody()->write(base64_encode(json_encode(getActiveServices($data))));
+});
+$app->post('/etc/projects',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(getAllProjects())));
 });
 $app->post('/etc/databases',function(Request $request, Response $response){
     $data=json_decode(base64_decode($request->getBody()));
@@ -99,7 +105,7 @@ $app->post('/serve',function(Request $request, Response $response){
 
     //resolve company api location
     $user_redis = new Redis();
-    $user_redis->connect('master_api-cache', 6378);
+    $user_redis->connect('master_api-cache', 6379);
     $ResponseData->api_location=$user_redis->get($user_company);
     if(!$ResponseData->api_location)
         {
@@ -157,7 +163,7 @@ $app->post('/sbin/adduser',function(Request $request, Response $response){
     $ResponseData=new stdClass;
     //get correct endpoint location
     $keycloak_host=exec("host sso_keycloak | awk '{printf $4}'");
-    $dest="http://".$keycloak_host.":8080/".;
+    //$dest="http://".$keycloak_host.":8080/".;
     
     //call curl wrapper and perform task
     curl($req_data->token,"","POST","");

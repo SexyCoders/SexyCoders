@@ -23,6 +23,12 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 
 import { plugin as vueMetaPlugin } from 'vue-meta'
 //import VueMeta from 'vue-meta'
+//
+    const onAuthError=function(){
+      window.location.reload();
+    }
+
+
 
 
 function resolveApiEndpoint(endpoint)
@@ -152,7 +158,9 @@ function getDatabases(token)
     error:
     (response) =>
           {
+      window.location.reload();
             //onAuthError();
+            
           },
       async:false
       });
@@ -244,11 +252,6 @@ function createGroup(token)
         return 0;
       }//'this is a plugin test' //this.$gPluginFun()
 
-    const onAuthError=function(){
-      window.location.reload();
-    }
-
-
 
 const initOptions = {
   url: process.env.VUE_APP_KEYCLOAK_OPTIONS_URL,
@@ -302,7 +305,7 @@ function main(){
     //getServices(keycloak.token);
     //console.log(JSON.stringify(store.etc.services));
 
-    //getDatabases(keycloak.token);
+    getDatabases(keycloak.token);
     //console.log(JSON.stringify(store.etc.databases));
 
     app.use(router)

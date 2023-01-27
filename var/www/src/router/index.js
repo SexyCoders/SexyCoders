@@ -54,6 +54,12 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "dashboard" */ '../components/users/create.vue'),
       },
+      {
+        path: '/admin/projects',
+        name: 'Projects',
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ '../components/admin/main_table.vue'),
+      },
       //{
         //path: '/theme/colors',
         //name: 'Colors',

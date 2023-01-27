@@ -24,17 +24,23 @@
     </CSidebarBrand>
     <CSidebarNav>
     <li class="nav-title">
-      <h5>MANAGE</h5>
-      <CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">
-        {{service.name}}
+      <a><b>ADMIN</b></a>
+      <CNavItem href="#" v-on:click.prevent="this.$router.push('/admin/projects');">
+        Projects
       </CNavItem>
     </li>
     <!--<li class="nav-title">-->
-      <!--<h5>DATABASES</h5>-->
-      <!--<CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">-->
-        <!--{{database.database_name}}-->
+      <!--<h5>MANAGE</h5>-->
+      <!--<CNavItem href="#" v-for="service in this.$store.etc.services" v-on:click.prevent="this.$store.tmp.selected_service=service;this.$router.push('/services/'+service.name);">-->
+        <!--{{service.name}}-->
       <!--</CNavItem>-->
     <!--</li>-->
+    <li class="nav-title">
+      <a><b>DATABASES</b></a>
+      <CNavItem href="#" v-for="database in this.$store.etc.databases" v-on:click.prevent="this.$store.tmp.selected_database=database;this.$router.push('/databases/'+database.database_id);">
+        {{database.database_name}}
+      </CNavItem>
+    </li>
     <!--<li class="nav-title">-->
       <!--<h5>SPREADSHEETS</h5>-->
     <!--</li>-->
