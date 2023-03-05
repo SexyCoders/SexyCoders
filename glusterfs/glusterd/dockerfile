@@ -1,0 +1,16 @@
+FROM debian:bullseye
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y glusterfs-server && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create mount point for GlusterFS volume
+RUN mkdir /glusterfs
+
+# Expose GlusterFS ports
+EXPOSE 24007/tcp 24008/tcp 24009/tcp 49152/tcp 49153/tcp 49154/tcp
+
+# Run GlusterFS server on container startup
+CMD ["glusterd", "-N"]
+
