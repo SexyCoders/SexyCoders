@@ -2,69 +2,72 @@ version: '3.7'
 
 services:
   server-1:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-mail-server-1
+    image: gluster/gluster-centos
+    hostname: glusterfs-node-1
     environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
+      - GLUSTERFS_VOLUME_NAME=mail
+      - GLUSTERFS_NODE_NAME=glusterfs-node-1
     volumes:
-      - /store/glusterfs/mail/lib:/var/lib/glusterd
-      - /store/glusterfs/mail/storage:/data
+      - glusterd-lib:/var/lib/glusterd
+      - glusterd-storage:/data
     deploy:
       replicas: 1
       placement:
         constraints:
           - node.hostname == lnd
     networks:
-      - mail
+      - glusterfs-net
 
   server-2:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-mail-server-2
+    image: gluster/gluster-centos
+    hostname: glusterfs-node-2
     environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
+      - GLUSTERFS_VOLUME_NAME=mail
+      - GLUSTERFS_NODE_NAME=glusterfs-node-2
     volumes:
-      - /store/glusterfs/mail/lib:/var/lib/glusterd
-      - /store/glusterfs/mail/storage:/data
+      - glusterd-lib:/var/lib/glusterd
+      - glusterd-storage:/data
     deploy:
       replicas: 1
       placement:
         constraints:
-          - node.hostname == nyc 
+          - node.hostname == nyc
     networks:
-      - mail
+      - glusterfs-net
 
   server-3:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-mail-server-3
+    image: gluster/gluster-centos
+    hostname: glusterfs-node-3
     environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
+      - GLUSTERFS_VOLUME_NAME=mail
+      - GLUSTERFS_NODE_NAME=glusterfs-node-3
     volumes:
-      - /store/glusterfs/mail/lib:/var/lib/glusterd
-      - /store/glusterfs/mail/storage:/data
+      - glusterd-lib:/var/lib/glusterd
+      - glusterd-storage:/data
     deploy:
       replicas: 1
       placement:
         constraints:
           - node.hostname == bng
     networks:
-      - mail
+      - glusterfs-net
 
-  server-4:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-mail-server-4
-    environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
-    volumes:
-      - /store/glusterfs/mail/lib:/var/lib/glusterd
-      - /store/glusterfs/mail/storage:/data
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.hostname == amd
-    networks:
-      - mail
+volumes:
+  glusterd-lib:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/glusterfs/mail/lib
+      o: bind
+  glusterd-storage:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/glusterfs/mail/storage
+      o: bind
+
 networks:
-  mail:
+  glusterfs-net:
     driver: overlay
-    name: glusterfs_mail
+    name: glusterfs-net
+
