@@ -1,0 +1,241 @@
+version: '3.7'
+
+services:
+  ceph-mgr1:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mgr1
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - CEPH_MGR_MODULE_PATH=/usr/lib/ceph/mgr
+    networks:
+      - ceph-network
+    command: ceph-mgr -i ceph-mgr1
+
+  ceph-mgr2:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mgr2
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - CEPH_MGR_MODULE_PATH=/usr/lib/ceph/mgr
+    networks:
+      - ceph-network
+    command: ceph-mgr -i ceph-mgr2
+
+  ceph-mgr3:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mgr3
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - CEPH_MGR_MODULE_PATH=/usr/lib/ceph/mgr
+    networks:
+      - ceph-network
+    command: ceph-mgr -i ceph-mgr3
+
+  ceph-mon1:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mon1
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_IP=10.0.0.11
+      - MON_INITIAL_MEMBERS=ceph-mon1,ceph-mon2,ceph-mon3
+    networks:
+      - ceph-network
+    command: ceph-mon -i ceph-mon1
+
+  ceph-mon2:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mon2
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_IP=10.0.0.12
+      - MON_INITIAL_MEMBERS=ceph-mon1,ceph-mon2,ceph-mon3
+    networks:
+      - ceph-network
+    command: ceph-mon -i ceph-mon2
+
+  ceph-mon3:
+    image: ceph/ceph:v15.2.13
+    hostname: ceph-mon3
+    volumes:
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=10.0.0.0/16
+      - MON_IP=10.0.0.13
+      - MON_INITIAL_MEMBERS=ceph-mon1,ceph-mon2,ceph-mon3
+    networks:
+      - ceph-network
+    command: ceph-mon -i ceph-mon3
+
+  ceph-osd1:
+    image: ceph/ceph:v15.2.12
+    hostname: ceph-osd1
+    volumes:
+      - ceph-devices:/dev
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=192.168.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - OSD_DEVICE=/dev/sdb
+    networks:
+      - ceph-network
+    command: ceph-osd -i 1
+
+  ceph-osd2:
+    image: ceph/ceph:v15.2.12
+    hostname: ceph-osd2
+    volumes:
+      - ceph-devices:/dev
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=192.168.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - OSD_DEVICE=/dev/sdb
+    networks:
+      - ceph-network
+    command: ceph-osd -i 2
+
+  ceph-osd3:
+    image: ceph/ceph:v15.2.12
+    hostname: ceph-osd3
+    volumes:
+      - ceph-devices:/dev
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=192.168.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - OSD_DEVICE=/dev/sdb
+    networks:
+      - ceph-network
+    command: ceph-osd -i 3
+
+  ceph-osd4:
+    image: ceph/ceph:v15.2.12
+    hostname: ceph-osd4
+    volumes:
+      - ceph-devices:/dev
+      - ceph-conf:/etc/ceph
+      - ceph-data:/var/lib/ceph
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == amd
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CEPH_PUBLIC_NETWORK=192.168.0.0/16
+      - MON_HOSTS=ceph-mon1,ceph-mon2,ceph-mon3
+      - OSD_DEVICE=/dev/sdb
+    networks:
+      - ceph-network
+    command: ceph-osd -i 4
+
+volumes:
+  ceph-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/ceph/config
+      o: bind
+  ceph-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/ceph/data
+      o: bind
+  ceph-devices:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/ceph/devices
+      o: bind
+
+networks:
+  ceph-network:
+    driver: overlay
+    name: ceph-network

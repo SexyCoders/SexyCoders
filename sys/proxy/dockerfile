@@ -4,10 +4,11 @@ WORKDIR /data
 
 EXPOSE 80 443
 
-COPY . .
+COPY ./acme-dns-auth.py /
+
 
 RUN apt-get update \ 
-&& apt-get install -y nginx certbot python3-certbot-nginx\
+&& apt-get install -y nginx certbot \
 && apt-get clean 
 
 #CMD ["service","nginx","restart"]
