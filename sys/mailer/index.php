@@ -22,12 +22,13 @@ function send_mail($data){
 		$mail->Host       = 'smtp.sexycoders.org';                     //Set the SMTP server to send through
 		$mail->SMTPAuth   = true;                                   //Enable SMTP authentication
 		$mail->Username   = 'mailer@sexycoders.org';                     //SMTP username
-		$mail->Password   = $passwd[0];                               //SMTP password
+		// $mail->Password   = $passwd[0];                               //SMTP password
+		$mail->Password = 'mailer';
 		$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
 		$mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
 		//Recipients
-		$mail->setFrom('mailer@sexycoders.org', 'SexyCoders Mailbot');
+		$mail->setFrom('mailer@sexycoders.org', 'SexyCoders Mailbot'); //! na allazei
 		//$mail->addAddress('joe@example.net', 'Joe User');     //Add a recipient
 		$mail->addAddress($data->to);               //Name is optional
 		$mail->addReplyTo($data->from, $data->name);
@@ -73,7 +74,25 @@ $app->post('/webpage_contact',function(Request $request, Response $response){
     $data=new stdClass();
     $data->from=$req_data->from;
 	$data->name=$req_data->name;
-    $data->to="team@sexycoders.org";
+    $data->to="team@sexycoders.org"; 
+    $data->subject='Contact Request - '.$req_data->subject;
+    $data->body=$req_data->body;
+    $data->sig=file_get_contents('./sigstring.html');
+
+	$res=send_mail($data);
+
+	$response->getBody()->write(json_encode($res));
+	//$response->getBody()->write(file_get_contents('/etc/sexycoders/mail.passwd'));
+});
+
+$app->post('/mailer_send',function(Request $request, Response $response){
+
+
+    $req_data=json_decode($request->getBody());
+    $data=new stdClass();
+    $data->from=$req_data->from;
+	$data->name=$req_data->name;
+    $data->to=$req_data->to; 	//? na allazei
     $data->subject='Contact Request - '.$req_data->subject;
     $data->body=$req_data->body;
     $data->sig=file_get_contents('./sigstring.html');
