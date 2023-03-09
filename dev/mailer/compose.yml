@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  api:
+    image: registry.sexycoders.org/master-api:1
+    container_name: mailer 
+    networks:
+      - master
+    volumes:
+      - /home/sotiris/Projects/SexyCoders/sys/mailer:/data
+      - /data/etc/mailer/:/etc/sexycoders
+    ports:
+      - 9900:80
+    restart: unless-stopped
+networks:
+  master:
+    name: master

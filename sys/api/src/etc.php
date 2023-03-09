@@ -19,77 +19,44 @@ function getActiveServices($data)
     return $ResponseData;
     };
 
-function getUserDatabases($data)
+function checkUserExists($data)
     {
         $ResponseData=new stdClass;
-        $ResponseData->databases=array();
-        $groups=resolveGroup($data)->groups;
-        $mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
-        $databases_db=(($mongo)->master->databases);
-        
-        //get all databases where user is owner
-        //get all databases where user is in group and group has read permissions, or where 'others' have read permissions
-        //BUT user is not owner to avoid duplicates with the above query
-        $matcher=array(
-            '$or'=>array(
-            array('owner'=>array('$ne'=>$data->sub)),
-            array('$or'=>
-                array(
-                    array('$and'=>array(array('group'=>array('$in'=>$groups)),array('permissions.g'=>array('$regex'=>'r')))),
-                    array('permissions.o'=>array('$regex'=>'r'))
-                )),
-        ));
-        $databases=$databases_db->find($matcher);
-        foreach ($databases as $database) {
-            array_push($ResponseData->databases,$database);
-            }
+        // $user_redis = new Redis();
+        // $user_redis->connect('master_group-cache', 6379);
+        // $ResponseData->groups=json_decode($user_redis->get($data->sub));
+        // if(!$ResponseData->user_exists)
+            // {
 
+                $flag = 0;
+                $pdo = new \pdo(
+                //"mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master',$passwd[0] ,
+                "mysql:host=master_database; dbname=master; charset=utf8mb4; port=3306",'master','master' ,
+                [
+                \pdo::ATTR_ERRMODE            => \pdo::ERRMODE_EXCEPTION,
+                \pdo::ATTR_DEFAULT_FETCH_MODE => \pdo::FETCH_ASSOC,
+                \pdo::ATTR_EMULATE_PREPARES   => false,
+                ]); 
+
+                $stmt = $pdo->prepare("select exists(select * from users where userid =?) as exists_flag");
+                $stmt->execute([$data->sub]);
+                $ResponseData->user_exists=json_decode($stmt->fetch()['exists_flag']);
+                $ResponseData->test=$data->sub;
+
+
+                if ($ResponseData->user_exists == null) {
+                    $ResponseData->user_exists = "NOEXIST";
+                    // $flag =  1;
+                }
+                else {
+                    $ResponseData->user_exists = "TRUE";
+                }
+
+                // if (!$flag) {
+                //     $user_redis = new Redis();
+                //     $user_redis->connect('master_group-cache', 6379);
+                //     $user_redis->set($data->sub,json_encode($ResponseData->user_exists));    
+                // }
+            // }    
     return $ResponseData;
     };
-
-function createUserDatabase($req_data)
-    {
-        //$db_name = $args['db_name'];
-        //$command = $args['command'];
-        //$req_data=json_decode(base64_decode($request->getBody()));
-        $data=$req_data->data;
-
-        //injecting default group of user
-        $t=new stdClass;
-        $t->sub=$data->user;
-        $data->group=getGroup($t)->default_group;
-        
-        //injecting default permissions
-        $data->permissions=new stdClass;
-        $data->permissions->u='rwx';
-        $data->permissions->g='r-x';
-        $data->permissions->o='r-x';
-
-
-        $ResponseData=new stdClass;
-        $ResponseData->error=0;
-        //$ResponseData->test=$data;
-        $mongo=new MongoDB\Client("mongodb://mongo:mongo@master_mongodb:27017");
-        //$db_name=$data->database_id;
-        $db=(($mongo)->master->databases);
-        $mongo_data=array(
-            'date'=>$data->date,
-            'user'=>$data->user,
-            'database_name'=>$data->database_name,
-            'database_id'=>$data->database_id,
-            'group'=>$data->group,
-            'permissions'=>array(
-                'u'=>$data->permissions->u,
-                'g'=>$data->permissions->g,
-                'o'=>$data->permissions->o,
-            ),
-            'db_fields'=>$data->db_fields,
-        );
-        //$ResponseData->check=$mongo_data;
-        $t=$db->insertOne($mongo_data);
-        if($t->getInsertedCount()!=1)
-            $ResponseData->error=1;
-        //$ResponseData->testing_something=$ResponseData->t->getInsertedCount();
-        //$response->getBody()->write(base64_encode(json_encode($ResponseData)));
-    return $ResponseData;
-    }

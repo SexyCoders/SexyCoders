@@ -4,8 +4,13 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require './vendor/autoload.php';
 require './src/auth.php';
+require './src/curl.php';
 require './src/resolve.php';
 require './src/etc.php';
+require './src/bin/user_db.php';
+require './src/bin/group.php';
+require './src/bin/user.php';
+require './src/bin/project.php';
 
 $app = new Slim\App;
 
@@ -39,7 +44,6 @@ $app->post('/resolve/default',function(Request $request, Response $response){
     $response->getBody()->write(base64_encode(json_encode(getGroup($data))));
 });
 
-
 ////////////
 //ETC
 ////////////
@@ -48,10 +52,22 @@ $app->post('/etc/services',function(Request $request, Response $response){
     $data=json_decode(auth($data->token));
     $response->getBody()->write(base64_encode(json_encode(getActiveServices($data))));
 });
+$app->post('/etc/projects',function(Request $request, Response $response){
+    $data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($data->token));
+    $response->getBody()->write(base64_encode(json_encode(getAllProjects())));
+});
 $app->post('/etc/databases',function(Request $request, Response $response){
     $data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($data->token));
     $response->getBody()->write(base64_encode(json_encode(getUserDatabases($data))));
+});
+
+$app->post('/etc/users/check_exists',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode($data)));
+    //$response->getBody()->write(base64_encode(json_encode(checkUserExists($data))));
 });
 
 ////////////
@@ -61,6 +77,20 @@ $app->post('/bin/create/database',function(Request $request, Response $response)
     $req_data=json_decode(base64_decode($request->getBody()));
     $data=json_decode(auth($req_data->token));
     $response->getBody()->write(base64_encode(json_encode(createUserDatabase($req_data))));
+});
+
+
+$app->post('/bin/create/group',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(createGroup($req_data))));
+});
+
+
+$app->post('/bin/create/user',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    $data=json_decode(auth($req_data->token));
+    $response->getBody()->write(base64_encode(json_encode(createUser($req_data))));
 });
 
 ////////////
@@ -127,4 +157,16 @@ $app->post('/serve',function(Request $request, Response $response){
     $response->getBody()->write(base64_encode(json_encode($ResponseData)));
 });
 
+$app->post('/sbin/adduser',function(Request $request, Response $response){
+    $req_data=json_decode(base64_decode($request->getBody()));
+    //$data=json_decode(auth($req_data->token));
+    $ResponseData=new stdClass;
+    //get correct endpoint location
+    $keycloak_host=exec("host sso_keycloak | awk '{printf $4}'");
+    //$dest="http://".$keycloak_host.":8080/".;
+    
+    //call curl wrapper and perform task
+    curl($req_data->token,"","POST","");
+    $response->getBody()->write(base64_encode(json_encode($ResponseData)));
+});
 $app->run();

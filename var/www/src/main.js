@@ -23,6 +23,12 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 
 import { plugin as vueMetaPlugin } from 'vue-meta'
 //import VueMeta from 'vue-meta'
+//
+    const onAuthError=function(){
+      window.location.reload();
+    }
+
+
 
 
 function resolveApiEndpoint(endpoint)
@@ -53,7 +59,7 @@ function resolveCompany(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.etc.rest+"/resolve/company",
+    url: store.etc.rest_debug+"/resolve/company",
     success:
     (response) =>
         {
@@ -75,7 +81,7 @@ function resolveGroup(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.etc.rest+"/resolve/group",
+    url: store.etc.rest_debug+"/resolve/group",
     success:
     (response) =>
         {
@@ -98,7 +104,29 @@ function getServices(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.etc.rest+"/etc/services",
+    url: store.etc.rest_debug+"/etc/services",
+    success:
+    (response) =>
+        {
+          store.etc.services=JSON.parse(atob(response)).services;
+        },
+    error:
+    (response) =>
+          {
+                    onAuthError();
+          },
+      async:false
+      });
+  }
+function getActiveServices(token)
+  {
+    var send={};
+    send.token=token;
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.etc.rest_debug+"/etc/services",
     success:
     (response) =>
         {
@@ -121,7 +149,7 @@ function getDatabases(token)
   $.ajax({
     type: 'POST',
     data: send, 
-    url: store.etc.rest+"/etc/databases",
+    url: store.etc.rest_debug+"/etc/databases",
     success:
     (response) =>
         {
@@ -130,11 +158,39 @@ function getDatabases(token)
     error:
     (response) =>
           {
+      window.location.reload();
             //onAuthError();
+            
           },
       async:false
       });
   }
+
+
+
+function checkUserExists(token)
+{
+  var send={};
+  send.token=token;
+  send=btoa(JSON.stringify(send));
+$.ajax({
+  type: 'POST',
+  data: send, 
+  url: store.etc.rest_debug+"/etc/users/check_exists",
+  success:
+  (response) =>
+      {
+        // store.etc.databases=JSON.parse(atob(response)).databases;
+        console.log(JSON.parse(atob(response)));
+      },
+  error:
+  (response) =>
+        {
+          //onAuthError();
+        },
+    async:false
+    });
+}
 
 function getUserInfo(token){
   resolveApiEndpoint('userinfo_endpoint');
@@ -159,6 +215,31 @@ function getUserInfo(token){
 
 };
 
+function createGroup(token)
+  {
+    var send={};
+    send.token=token;
+    send.name = "test_name";
+    send=btoa(JSON.stringify(send));
+  $.ajax({
+    type: 'POST',
+    data: send, 
+    url: store.etc.rest_debug+"/bin/create/group",
+    success:
+    (response) =>
+        {
+          // store.etc.services=JSON.parse(atob(response)).services;
+          console.log(JSON.parse(atob(response)))
+        },
+    error:
+    (response) =>
+          {
+                    onAuthError();
+          },
+      async:false
+      });
+  }
+
 
     const checkToken=function(){
         keycloak.updateToken(70).then((refreshed) => {
@@ -170,11 +251,6 @@ function getUserInfo(token){
         });
         return 0;
       }//'this is a plugin test' //this.$gPluginFun()
-
-    const onAuthError=function(){
-      window.location.reload();
-    }
-
 
 
 const initOptions = {
@@ -197,8 +273,9 @@ function main(){
     app.use(store)
     store.DEBUG=process.env.VUE_APP_DEBUG;
     store.etc={};
-    store.etc.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
     store.etc.token=keycloak.token;
+    store.etc.rest=(store.DEBUG?"http://localhost:9000":"https://rest.uniclient.org");
+    store.etc.rest_debug="http://localhost:9000";
     store.tmp={};
     store.data={};
     store.proc={};
@@ -213,17 +290,23 @@ function main(){
     getUserInfo(keycloak.token);
     console.log(JSON.stringify(store.etc.user));
 
+
+    checkUserExists(keycloak.token);
+    createGroup(keycloak.token);
+
     resolveCompany(keycloak.token);
     console.log(JSON.stringify(store.etc.company));
 
     resolveGroup(keycloak.token);
     console.log(JSON.stringify(store.etc.group));
 
-    getServices(keycloak.token);
-    console.log(JSON.stringify(store.etc.services));
+    getActiveServices(keycloak.token);
+
+    //getServices(keycloak.token);
+    //console.log(JSON.stringify(store.etc.services));
 
     getDatabases(keycloak.token);
-    console.log(JSON.stringify(store.etc.databases));
+    //console.log(JSON.stringify(store.etc.databases));
 
     app.use(router)
     app.use(CoreuiVue)

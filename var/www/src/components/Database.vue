@@ -164,7 +164,8 @@ export default {
             error:
             (response) =>
                   {
-                    this.$onAuthError();
+      window.location.reload();
+      //              this.$onAuthError();
                   },
               async:false
               });
@@ -200,6 +201,7 @@ export default {
             this.$data.run.table_rows=[];
             var a=JSON.parse(atob(response)).data;
             var t = JSON.parse(JSON.stringify(a));
+            console.log(a);
             this.$data.run.db_data=a;
             this.$data.run.database_obj.db_fields.forEach((field)=>{
               //var t=Object.keys(field);
@@ -215,11 +217,13 @@ export default {
               delete obj['_id'];
             });
             this.$data.run.table_rows=t;
+            console.log(t);
           },
       error:
       (response) =>
             {
-                    this.$onAuthError();
+      //              this.$onAuthError();
+      window.location.reload();
             },
         async:false
         });
