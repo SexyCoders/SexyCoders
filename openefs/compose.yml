@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  afs-server:
+    image: openafs
+    deploy:
+      replicas: 2
+    volumes:
+      - afs-data:/vicepa
+      - afs-conf:/usr/afs/etc
+    networks:
+      - afs-net
+    environment:
+      - AFS_REALM=example.com
+      - AFS_CELL=example.com
+      - AFS_DB=/vice/db
+      - AFS_DB_ROOT_KEY=afsroot
+      - AFS_DB_ROOT_PASSWORD=password
+      - AFS_ADMIN_GROUP=admin
+      - AFS_ADMIN_USER=admin
+    command: ["/bin/bash", "-c", "bosserver && fsdaemon -verbose"]
+
+  afs-client:
+    image: openafs
+    depends_on:
+      - afs-server
+    networks:
+      - afs-net
+    environment:
+      - AFS_REALM=example.com
+      - AFS_CELL=example.com
+      - AFS_DB=/vice/db
+      - AFS_DB_ROOT_KEY=afsroot
+      - AFS_DB_ROOT_PASSWORD=password
+      - AFS_ADMIN_GROUP=admin
+      - AFS_ADMIN_USER=admin
+    command: ["/bin/bash", "-c", "while true; do sleep 60; done"]
+
+networks:
+  afs-net:
+
+volumes:
+  afs-data:
+  afs-conf:
+

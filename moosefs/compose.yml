@@ -1,0 +1,175 @@
+version: '3'
+
+services:
+  mfsmaster:
+    image: moosefs/master
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/master:/var/lib/mfs
+    hostname: mfsmaster
+      #environment:
+      #e - MFS_ENV=TEST
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == lnd
+  
+  mfscgi:
+    image: moosefs/cgi
+    networks:
+      - moosefsnet
+    ports:
+      - "9425:9425"
+    depends_on:
+      - mfsmaster
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == nyc
+
+  mfsmetalogger:
+    image: moosefs/metalogger
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/metalogger:/var/lib/mfs
+    environment:
+      - MFS_ENV=TEST
+    depends_on:
+      - mfsmaster
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == bng
+
+  mfschunkserver1:
+    image: moosefs/chunkserver
+    environment:
+      - LABELS=M
+    depends_on:
+      - mfsmaster
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/cs1:/var/lib/mfs
+      - /store/mfs/hdd0/cs1:/mnt/hdd0
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == amd
+
+  mfschunkserver2:
+    image: moosefs/chunkserver
+    environment:
+      - LABELS=M,B
+    depends_on:
+      - mfsmaster
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/cs2:/var/lib/mfs
+      - /store/mfs/hdd0/cs2:/mnt/hdd0
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == lnd
+
+  mfschunkserver3:
+    image: moosefs/chunkserver
+    environment:
+      - LABELS=M,B
+    depends_on:
+      - mfsmaster
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/cs3:/var/lib/mfs
+      - /store/mfs/hdd0/cs3:/mnt/hdd0
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == nyc
+
+  mfschunkserver4:
+    image: moosefs/chunkserver
+    environment:
+      - LABELS=B
+    depends_on:
+      - mfsmaster
+    networks:
+      - moosefsnet
+    volumes:
+      - /store/mfs/cs4:/var/lib/mfs
+      - /store/mfs/hdd0/cs4:/mnt/hdd0
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == bng
+
+            #  mfsclient:
+            #    image: moosefs/client
+            #    cap_add:
+            #      - SYS_ADMIN
+            #    devices:
+            #      - /dev/fuse:/dev/fuse
+            #    security_opt:
+            #      - apparmor:unconfined
+            #    stdin_open: true
+            #    tty: true
+            #    depends_on:
+            #      - mfsmaster
+            #      - mfschunkserver1
+            #      - mfschunkserver2
+            #      - mfschunkserver3
+            #      - mfschunkserver4
+            #    networks:
+            #      - moosefsnet
+
+  nginx:
+    image: legacy-registry.sexycoders.org/proxy:latest
+    hostname: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    expose:
+      - "80"
+    network_mode: host
+    networks:
+      - public
+      - moosefsnet
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==lnd
+  test:
+    image: debian:bullseye
+    networks:
+      - moosefsnet
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==lnd
+    command: tail -f /dev/null
+
+  mfscli:
+    image: moosefs/mfs-tools
+    container_name: mfscli
+    depends_on:
+      - mfsmaster
+    environment:
+      - MFSMASTER=mfsmaster
+      - MFSCLI_LOGLEVEL=INFO
+    volumes:
+      - ./secret_key:/root/moosefs.secret_key
+    networks:
+      - moosefsnet
+    command: sleep infinity
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==lnd
+
+networks:
+  moosefsnet:
+  public:
+    external: true

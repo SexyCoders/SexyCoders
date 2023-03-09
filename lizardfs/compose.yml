@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+  mfs1:
+    image: lizardfs
+    hostname: mfs1
+    volumes:
+      - mfs1_data:/var/lib/mfs
+    environment:
+      - MFSMASTER=1
+      - MFSEXPORT=/exports
+      - MFSTOOL_USER=yourusername
+      - MFSTOOL_PASSWORD=yourpassword
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+  mfs2:
+    image: lizardfs
+    hostname: mfs2
+    volumes:
+      - mfs2_data:/var/lib/mfs
+    environment:
+      - MFSMASTER=0
+      - MFSMASTER_HOST=mfs1
+      - MFSEXPORT=/exports
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+  mfs3:
+    image: lizardfs
+    hostname: mfs3
+    volumes:
+      - mfs3_data:/var/lib/mfs
+    environment:
+      - MFSMASTER=0
+      - MFSMASTER_HOST=mfs1
+      - MFSEXPORT=/exports
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+  mfs4:
+    image: lizardfs
+    hostname: mfs4
+    volumes:
+      - mfs4_data:/var/lib/mfs
+    environment:
+      - MFSMASTER=0
+      - MFSMASTER_HOST=mfs1
+      - MFSEXPORT=/exports
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == amd
+
+volumes:
+  mfs1_data:
+    driver_opts:
+      type: none
+      device: /store/lizardfs/mfs1_data
+  mfs2_data:
+    driver_opts:
+      type: none
+      device: /store/lizardfs/mfs2_data
+  mfs3_data:
+    driver_opts:
+      type: none
+      device: /store/lizardfs/mfs3_data
+  mfs4_data:
+    driver_opts:
+      type: none
+      device: /store/lizardfs/mfs4_data
+

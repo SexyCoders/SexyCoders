@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  master:
+    image: seaweedfs/weed-master:2.32
+    hostname: seaweedfs-master
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+          #          - node.labels.storage == true
+          #          - replicas-per-node == 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 9333:9333
+      - 8080:8080
+    environment:
+      - DOMAIN=seaweedfs
+      - PORT=9333
+      - MASTERSERVER=seaweedfs-master:9333
+    volumes:
+      - seaweedfs-master-data:/data
+      - seaweedfs-master-conf:/conf
+    networks:
+      - seaweedfs-network
+
+  volume:
+    image: seaweedfs/weed-volume:2.32
+    hostname: seaweedfs-volume
+    deploy:
+      replicas: 4
+      placement:
+        constraints:
+          - node.labels.storage == true
+          - replicas-per-node == 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - DOMAIN=seaweedfs
+      - PORT=8080
+      - MASTER=seaweedfs-master:9333
+      - VOLUME=seaweedfs-volume
+      - DIR=/data
+    volumes:
+      - seaweedfs-volume-data:/data
+      - seaweedfs-volume-conf:/conf
+    networks:
+      - seaweedfs-network
+
+volumes:
+  seaweedfs-master-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/seaweedfs/master/data
+      o: bind
+  seaweedfs-master-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/seaweedfs/master/conf
+      o: bind
+  seaweedfs-volume-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/seaweedfs/volume/data
+      o: bind
+  seaweedfs-volume-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: /store/seaweedfs/volume/conf
+      o: bind
+
+networks:
+  seaweedfs-network:
+    driver: overlay
+

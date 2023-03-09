@@ -1,0 +1,111 @@
+version: '3'
+
+services:
+  afs-db-lnd:
+    image: openafs/afs-db
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+    volumes:
+      - /store/openafs/db:/var/lib/openafs/db
+    networks:
+      afs-net:
+        aliases:
+          - afs-db-lnd
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_DB_SERVER=1
+
+  afs-db-nyc:
+    image: openafs/afs-db
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+    volumes:
+      - /store/openafs/db:/var/lib/openafs/db
+    networks:
+      afs-net:
+        aliases:
+          - afs-db-nyc
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_DB_SERVER=2
+
+  afs-db-bng:
+    image: openafs/afs-db
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+    volumes:
+      - /store/openafs/db:/var/lib/openafs/db
+    networks:
+      afs-net:
+        aliases:
+          - afs-db-bng
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_DB_SERVER=3
+
+  afs-fileserver-lnd:
+    image: openafs/afs-fileserver
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+    volumes:
+      - /store/openafs/vol:/vicepa
+      - /store/openafs/db:/var/lib/openafs/db:ro
+    networks:
+      afs-net:
+        aliases:
+          - afs-fileserver-lnd
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_SERVER=1
+
+  afs-fileserver-nyc:
+    image: openafs/afs-fileserver
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+    volumes:
+      - /store/openafs/vol:/vicepa
+      - /store/openafs/db:/var/lib/openafs/db:ro
+    networks:
+      afs-net:
+        aliases:
+          - afs-fileserver-nyc
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_SERVER=2
+
+  afs-fileserver-bng:
+    image: openafs/afs-fileserver
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+    volumes:
+      - /store/openafs/vol:/vicepa
+      - /store/openafs/db:/var/lib/openafs/db:ro
+    networks:
+      afs-net:
+        aliases:
+          - afs-fileserver-bng
+    environment:
+      - AFS_DB_PASSWORD=password
+      - AFS_SERVER=3
+
+networks:
+  afs-net:
+

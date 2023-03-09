@@ -1,73 +1,63 @@
 version: '3.7'
 
 services:
-  server-1:
+  glusterfs:
     image: gluster/gluster-centos
-    hostname: glusterfs-node-1
-    environment:
-      - GLUSTERFS_VOLUME_NAME=mail
-      - GLUSTERFS_NODE_NAME=glusterfs-node-1
+    command: "/bin/bash -c 'while :; do sleep 10; done'"
     volumes:
-      - glusterd-lib:/var/lib/glusterd
-      - glusterd-storage:/data
+      - "gluster-lib:/var/lib/glusterd:Z"
+      - "gluster-data:/data/gluster:Z"
     deploy:
-      replicas: 1
+      replicas: 3
       placement:
         constraints:
-          - node.hostname == lnd
-    networks:
-      - glusterfs-net
+          - node.role == manager # run on manager nodes instead of worker nodes
 
-  server-2:
+  glusterfsd:
     image: gluster/gluster-centos
-    hostname: glusterfs-node-2
-    environment:
-      - GLUSTERFS_VOLUME_NAME=mail
-      - GLUSTERFS_NODE_NAME=glusterfs-node-2
+    command: "/bin/bash -c 'glusterd -N; while :; do sleep 10; done'"
     volumes:
-      - glusterd-lib:/var/lib/glusterd
-      - glusterd-storage:/data
+      - "gluster-lib:/var/lib/glusterd:Z"
+      - "gluster-data:/data/gluster:Z"
     deploy:
-      replicas: 1
+      replicas: 3
       placement:
         constraints:
-          - node.hostname == nyc
-    networks:
-      - glusterfs-net
+          - node.role == manager # run on manager nodes instead of worker nodes
 
-  server-3:
+  glusterfsd2:
     image: gluster/gluster-centos
-    hostname: glusterfs-node-3
-    environment:
-      - GLUSTERFS_VOLUME_NAME=mail
-      - GLUSTERFS_NODE_NAME=glusterfs-node-3
+    command: "/bin/bash -c 'glusterd -N; while :; do sleep 10; done'"
     volumes:
-      - glusterd-lib:/var/lib/glusterd
-      - glusterd-storage:/data
+      - "gluster-lib:/var/lib/glusterd:Z"
+      - "gluster-data:/data/gluster:Z"
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == manager # run on manager nodes instead of worker nodes
+
+  glusterfs-client:
+    image: gluster/gluster-centos
+    volumes:
+      - "gluster-lib:/var/lib/glusterd:Z"
+      - "gluster-data:/data/gluster:Z"
     deploy:
       replicas: 1
       placement:
         constraints:
-          - node.hostname == bng
-    networks:
-      - glusterfs-net
+          - node.role == manager
+    entrypoint: "/bin/bash"
+    command:
+      - "-c"
+      - |
+        gluster peer probe glusterfs.1.glusterfs.glusterfs_default &&
+        gluster peer probe glusterfs.2.glusterfs.glusterfs_default &&
+        gluster volume create gluster-volume replica 3 glusterfs.1.glusterfs.glusterfs_default:/data/gluster glusterfs.2.glusterfs.glusterfs_default:/data/gluster glusterfs.3.glusterfs.glusterfs_default:/data/gluster &&
+        gluster volume start gluster-volume &&
+        while :; do sleep 10; done
 
 volumes:
-  glusterd-lib:
-    driver: local
-    driver_opts:
-      type: none
-      device: /store/glusterfs/mail/lib
-      o: bind
-  glusterd-storage:
-    driver: local
-    driver_opts:
-      type: none
-      device: /store/glusterfs/mail/storage
-      o: bind
-
-networks:
-  glusterfs-net:
-    driver: overlay
-    name: glusterfs-net
+  gluster-lib:
+  gluster-data:
 

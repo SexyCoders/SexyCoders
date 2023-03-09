@@ -1,0 +1,10 @@
+FROM debian:stable-slim
+
+RUN apt-get update && apt-get install -y wget gnupg2
+RUN wget -qO - https://repo.lizardfs.com/pub.key | apt-key add -
+RUN echo "deb http://repo.lizardfs.com/debian/ stable main" > /etc/apt/sources.list.d/lizardfs.list
+RUN apt-get update && apt-get install -y lizardfs-server lizardfs-client
+
+ENTRYPOINT ["/usr/bin/mfsmaster"]
+CMD ["-d", "-f"]
+

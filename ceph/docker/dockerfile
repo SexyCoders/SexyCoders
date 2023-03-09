@@ -1,0 +1,6 @@
+FROM ceph/ceph:v16.2.5
+
+ADD https://github.com/ceph/ceph/raw/v16.2.5/src/ceph-osd/osd_directory /usr/bin/osd_directory
+
+RUN chmod +x /usr/bin/osd_directory
+

@@ -1,0 +1,115 @@
+version: '3.7'
+
+networks:
+  moosenet:
+    driver: overlay
+
+services:
+  mfsmaster1:
+    image: moosefs/moosefs:latest
+    hostname: mfsmaster1
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+      restart_policy:
+        condition: on-failure
+    networks:
+      - moosenet
+
+  mfsmaster2:
+    image: moosefs/moosefs:latest
+    hostname: mfsmaster2
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+      restart_policy:
+        condition: on-failure
+    networks:
+      - moosenet
+
+  mfsmaster3:
+    image: moosefs/moosefs:latest
+    hostname: mfsmaster3
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+      restart_policy:
+        condition: on-failure
+    networks:
+      - moosenet
+
+  mfschunkserver1:
+    image: moosefs/moosefs:latest
+    hostname: mfschunkserver1
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == lnd
+    environment:
+      - MFSCONF_ADJUST_OWNERSHIP=true
+      - MFSCONF_METADATA_MEMORY_LIMIT=256
+      - MFSCONF_ENABLE_CHUNK_CACHING=false
+      - MFSCONF_MFSMASTERS=mfsmaster1,mfsmaster2,mfsmaster3
+      - MFSCONF_MFSMASTER_HOST=mfsmaster1
+      - MFSCONF_MFSMOUNTD_HOST=mfsmaster1
+      - MFSCONF_MFSCHUNKSERVERS=mfschunkserver1,mfschunkserver2,mfschunkserver3
+    volumes:
+      - /store/moosefs/mfschunkserver1:/data/mfs
+    restart_policy:
+      condition: on-failure
+    networks:
+      - moosenet
+
+  mfschunkserver2:
+    image: moosefs/moosefs:latest
+    hostname: mfschunkserver2
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == nyc
+    environment:
+      - MFSCONF_ADJUST_OWNERSHIP=true
+      - MFSCONF_METADATA_MEMORY_LIMIT=256
+      - MFSCONF_ENABLE_CHUNK_CACHING=false
+      - MFSCONF_MFSMASTERS=mfsmaster1,mfsmaster2,mfsmaster3
+      - MFSCONF_MFSMASTER_HOST=mfsmaster1
+      - MFSCONF_MFSMOUNTD_HOST=mfsmaster1
+      - MFSCONF_MFSCHUNKSERVERS=mfschunkserver1,mfschunkserver2,mfschunkserver3
+    volumes:
+      - /store/moosefs/mfschunkserver2:/data/mfs
+    restart_policy:
+      condition: on-failure
+    networks:
+      - moosenet
+
+  mfschunkserver3:
+    image: moosefs/moosefs:latest
+    hostname: mfschunkserver3
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == bng
+    environment:
+      - MFSCONF_ADJUST_OWNERSHIP=true
+      - MFSCONF_METADATA_MEMORY_LIMIT=256
+      - MFSCONF_ENABLE_CHUNK_CACHING=false
+      - MFSCONF_MFSMASTERS=mfsmaster1,mfsmaster2,mfsmaster3
+      - MFSCONF_MFSMASTER_HOST=mfsmaster1
+      - MFSCONF_MFSMOUNTD_HOST=mfsmaster1
+      - MFSCONF_MFSCHUNKSERVERS=mfschunkserver1,mfschunkserver2,mfschunkserver3
+    volumes:
+      - /store/moosefs/mfschunkserver3:/data/mfs
+    restart_policy:
+      condition: on-failure
+    networks:
+      - moosenet
+

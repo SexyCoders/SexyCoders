@@ -1,59 +1,46 @@
-version: '3.7'
+version: "3.7"
 
 services:
-  glusterfs-server-1:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-server-1
-    environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
-    volumes:
-      - /store/glusterfs/vol0:/var/lib/glusterd
-      - /store/glusterfs/storage:/data
+  glusterfs-node1:
+    image: centos/glusterfs:latest
     deploy:
       replicas: 1
       placement:
         constraints:
           - node.hostname == lnd
-
-  glusterfs-server-2:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-server-2
-    environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
     volumes:
-      - /store/glusterfs/vol0:/var/lib/glusterd
-      - /store/glusterfs/storage:/data
+      - glusterfs-data:/data
+    networks:
+      - glusterfs
+
+  glusterfs-node2:
+    image: centos/glusterfs:latest
     deploy:
       replicas: 1
       placement:
         constraints:
-          - node.hostname == nyc 
-
-  glusterfs-server-3:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-server-3
-    environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
+          - node.hostname == nyc
     volumes:
-      - /store/glusterfs/vol0:/var/lib/glusterd
-      - /store/glusterfs/storage:/data
+      - glusterfs-data:/data
+    networks:
+      - glusterfs
+
+  glusterfs-node3:
+    image: centos/glusterfs:latest
     deploy:
       replicas: 1
       placement:
         constraints:
           - node.hostname == bng
-
-  glusterfs-server-4:
-    image: legacy-registry.sexycoders.org/glusterd:latest
-    hostname: glusterfs-server-4
-    environment:
-      - GLUSTERFS_VOLUME_NAME=vol0
     volumes:
-      - /store/glusterfs/lib:/var/lib/glusterd
-      - /store/glusterfs/storage:/data
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.hostname == amd
+      - glusterfs-data:/data
+    networks:
+      - glusterfs
+
+volumes:
+  glusterfs-data:
+
+networks:
+  glusterfs:
+    driver: overlay
 

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  openebs:
+    image: openebs/openebs-k8s-provisioner:v1.11.0
+    deploy:
+      replicas: 4
+      max_replicas_per_node: 1
+      placement:
+        constraints:
+          - node.hostname == lnd || node.hostname == nyc || node.hostname == bng || node.hostname == amd
+    environment:
+      - NODE_NAME={{.Node.Hostname}}
+      - OPENEBS_NAMESPACE=openebs
+      - OPENEBS_IO_ENABLE_ANALYTICS=false
+    volumes:
+      - /store/openebs:/var/openebs
+
+volumes:
+  openebs-jiva-vol:
+    driver: openebs-jiva
+
