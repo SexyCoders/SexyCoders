@@ -29,6 +29,7 @@ services:
       - /store/mattermost/mattermost-data:/mattermost/data
     networks:
       - mattermost-network
+      - minio
 
   mariadb:
     image: mariadb:latest
@@ -52,4 +53,6 @@ services:
 networks:
   mattermost-network:
     name: mattermost-net
-
+  minio:
+    external:
+      name: minio_minio_distributed
