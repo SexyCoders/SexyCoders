@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  mattermost:
+    image: mattermost/mattermost-team-edition:latest
+    environment:
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD=mmpassword
+      - MM_EMAIL=mmuser@example.com
+      - MM_SITEURL=http://example.com
+      - MM_CONFIG=mysql://mmuser:mmpassword@tcp(mariadb:3306)/mattermost?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s
+      - MM_ENABLEBOTACCOUNTS=true
+      - MM_BOTACCOUNTENABLED=true
+      - MM_BOTACCOUNTUSERNAME=bot
+      - MM_BOTACCOUNTPASSWORD=botpassword
+      - MM_BOTACCOUNTDISPLAYNAME="Mattermost Bot"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - mattermost-data:/mattermost/data
+    networks:
+      - mattermost-network
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mattermost
+      - MYSQL_USER=mmuser
+      - MYSQL_PASSWORD=mmpassword
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - WSREP_NEW_CLUSTER=1
+      - WSREP_NODE_ADDRESS=$$hostname
+      - WSREP_CLUSTER_ADDRESS=gcomm://mariadb-1,mariadb-2,mariadb-3
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - mattermost-network
+
+volumes:
+  mattermost-data:
+  mariadb-data:
+
+networks:
+  mattermost-network:
+    name: mattermost-net
+

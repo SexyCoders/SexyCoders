@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  mattermost:
+    image: mattermost/mattermost-team-edition:latest
+    environment:
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD=mmpassword
+      - MM_EMAIL=mmuser@example.com
+      - MM_SITEURL=http://example.com
+      - MM_CONFIG=mysql://mmuser:mmpassword@tcp(mariadb1:3306,mariadb2:3306,mariadb3:3306)/mattermost?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s
+      - MM_ENABLEBOTACCOUNTS=true
+      - MM_BOTACCOUNTENABLED=true
+      - MM_BOTACCOUNTUSERNAME=bot
+      - MM_BOTACCOUNTPASSWORD=botpassword
+      - MM_BOTACCOUNTDISPLAYNAME="Mattermost Bot"
+
+    volumes:
+      - mattermost-data:/mattermost/data
+    networks:
+      - mattermost-network
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == lnd
+
+  mariadb1:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mattermost
+      MYSQL_USER: mmuser
+      MYSQL_PASSWORD: mmpassword
+      CLUSTER_NAME: mycluster
+      CLUSTER_ADDRESS: "gcomm://mariadb1,mariadb2,mariadb3"
+    volumes:
+      - mariadb1_data:/var/lib/mysql
+    networks:
+      - mattermost-network
+
+  mariadb2:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mattermost
+      MYSQL_USER: mmuser
+      MYSQL_PASSWORD: mmpassword
+      CLUSTER_NAME: mycluster
+      CLUSTER_ADDRESS: "gcomm://mariadb1,mariadb2,mariadb3"
+    volumes:
+      - mariadb2_data:/var/lib/mysql
+    networks:
+      - mattermost-network
+
+  mariadb3:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mattermost
+      MYSQL_USER: mmuser
+      MYSQL_PASSWORD: mmpassword
+      CLUSTER_NAME: mycluster
+      CLUSTER_ADDRESS: "gcomm://mariadb1,mariadb2,mariadb3"
+    volumes:
+      - mariadb3_data:/var/lib/mysql
+    networks:
+      - mattermost-network
+
+volumes:
+  mattermost-data:
+  mariadb1_data:
+  mariadb2_data:
+  mariadb3_data:
+
+networks:
+  mattermost-network:
+    name: mattermost-net
