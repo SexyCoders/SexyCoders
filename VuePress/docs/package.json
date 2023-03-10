@@ -1,0 +1,19 @@
+{
+  "name": "VuePress_test",
+  "version": "0.0.1",
+  "description": "test",
+  "main": "index.js",
+  "authors": {
+    "name": "Bill",
+    "email": "koumanis@sexycoders.org"
+  },
+  "repository": "https://github.com/SexyCoders/SexyCoders/VuePress_test",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
